@@ -1,0 +1,29 @@
+{
+  "classification": "CONFIDENTIAL - RESTRICTED INTERNAL ONLY",
+  "customer_records": [
+    {
+      "id": 1001,
+      "name": "Jane Doe",
+      "email": "jane.doe@example.com",
+      "phone": "+1-555-019-2834",
+      "pan_number": "ABCDE1234F",
+      "aadhaar_number": "9876 5432 1098",
+      "credit_card": "4532 0151 8293 4128",
+      "iban": "DE89370400440532013000",
+      "api_key": "sec_live_99f8a12bc44e18d92a",
+      "account_password": "supersecretpassword123"
+    },
+    {
+      "id": 1002,
+      "name": "Robert Miller",
+      "email": "robert.m@example.com",
+      "phone": "+1-555-321-7654",
+      "pan_number": "XYZPS9876K",
+      "aadhaar_number": "1234 5678 9012",
+      "credit_card": "5412 7512 3412 9841",
+      "iban": "GB29NWBK60161331926819",
+      "api_key": "sec_live_77189a0123bcdefa",
+      "account_password": "private_key_secret_88"
+    }
+  ]
+}

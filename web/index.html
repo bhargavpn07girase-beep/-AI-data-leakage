@@ -1,0 +1,2376 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SentinelDLP | AI Data Leakage Detection & Real-Time SOC Monitor</title>
+  <link rel="stylesheet" href="/static/css/tokens.css?v=4.4">
+  <link rel="stylesheet" href="/static/css/components.css?v=4.4">
+  <link rel="stylesheet" href="/static/styles.css?v=4.4">
+</head>
+<body>
+  <div class="app-container">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="app-sidebar">
+      <div class="brand">
+        <div class="brand-logo" title="SentinelDLP AI Defense">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">Sentinel<span class="highlight">DLP</span></span>
+          <span class="brand-tag">AI Data Defense</span>
+        </div>
+        <button class="sidebar-collapse-btn" id="sidebar-collapse-btn" title="Toggle Sidebar Rail (Collapse/Expand)" aria-label="Toggle Sidebar">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+      </div>
+
+      <nav class="nav-menu">
+        <!-- GROUP 1: OVERVIEW -->
+        <div class="sidebar-group">
+          <div class="sidebar-group-title">Overview</div>
+          <button class="nav-item active" data-page="overview" title="Overview">
+            <svg class="icon" width="18" height="18"><use href="/static/icons.svg#icon-layout-grid"/></svg>
+            <span>Overview</span>
+          </button>
+          <button class="nav-item" data-page="assistant" title="AI Command Console">
+            <svg class="icon" width="18" height="18"><use href="/static/icons.svg#icon-terminal"/></svg>
+            <span>AI Console</span>
+            <span class="badge-live" style="background: rgba(124, 92, 255, 0.2); color: #a78bfa; border: 1px solid rgba(124, 92, 255, 0.4);">COPILOT</span>
+          </button>
+        </div>
+
+        <!-- GROUP 2: PROTECTION -->
+        <div class="sidebar-group">
+          <div class="sidebar-group-title">Protection</div>
+          <button class="nav-item" data-page="live-monitor" title="Live Monitor">
+            <svg class="icon" width="18" height="18"><use href="/static/icons.svg#icon-activity"/></svg>
+            <span>Live Monitor</span>
+            <span class="badge-live pulse" id="live-feed-badge">LIVE</span>
+          </button>
+          <button class="nav-item" data-page="incidents" title="Incidents">
+            <svg class="icon" width="18" height="18"><use href="/static/icons.svg#icon-alert-triangle"/></svg>
+            <span>Incidents</span>
+          </button>
+          <button class="nav-item" data-page="scan-reports" title="Scan Reports">
+            <svg class="icon" width="18" height="18"><use href="/static/icons.svg#icon-file-text"/></svg>
+            <span>Scan Reports</span>
+          </button>
+          <button class="nav-item" data-page="upload-review" title="Upload Review">
+            <svg class="icon" width="18" height="18"><use href="/static/icons.svg#icon-upload"/></svg>
+            <span>Upload Review</span>
+          </button>
+          <button class="nav-item" data-page="quarantine" title="Quarantine Vault">
+            <svg class="icon" width="18" height="18"><use href="/static/icons.svg#icon-lock"/></svg>
+            <span>Quarantine</span>
+            <span class="counter-pill" id="quarantine-count-badge">0</span>
+          </button>
+          <button class="nav-item" data-page="prompt-verification" title="Prompt Security">
+            <svg class="icon" width="18" height="18"><use href="/static/icons.svg#icon-shield"/></svg>
+            <span>Prompt Security</span>
+          </button>
+        </div>
+
+        <!-- GROUP 3: GOVERNANCE -->
+        <div class="sidebar-group">
+          <div class="sidebar-group-title">Governance</div>
+          <button class="nav-item" data-page="audit-trail" title="Audit Trail">
+            <svg class="icon" width="18" height="18"><use href="/static/icons.svg#icon-clock"/></svg>
+            <span>Audit Trail</span>
+          </button>
+          <button class="nav-item" data-page="workflows" title="Automation Workflows">
+            <svg class="icon" width="18" height="18"><use href="/static/icons.svg#icon-activity"/></svg>
+            <span>Workflows</span>
+          </button>
+          <button class="nav-item" data-page="settings" title="Policy & Settings">
+            <svg class="icon" width="18" height="18"><use href="/static/icons.svg#icon-settings"/></svg>
+            <span>Policy &amp; Settings</span>
+          </button>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="theme-toggle" id="theme-toggle-btn" title="Toggle Theme">
+          <svg class="sun-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+          <svg class="moon-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+          <span id="theme-mode-text">Dark SOC Mode</span>
+        </div>
+        <div class="version-tag">v2.0 • Offline Local Mode</div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="main-content" id="app-main-content">
+      <!-- TOP BAR -->
+      <header class="top-bar" style="display: flex; flex-direction: column; gap: 10px; padding: 12px 18px; background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 1.5rem; position: relative; z-index: 50;">
+        <!-- TOP PRIMARY ROW: Telemetry, Workspace, Role, Search, Actions -->
+        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 12px; flex-wrap: wrap;">
+          <div class="top-left" style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
+            <div class="status-indicator">
+              <span class="pulse-dot active" id="status-pulse-dot"></span>
+              <span class="status-text" id="status-text">Monitoring Active</span>
+            </div>
+            <div class="scan-pulse-line" id="scan-pulse-bar"></div>
+            
+            <!-- Workspace Monitored Folder -->
+            <div class="folder-chip" id="workspace-selector-chip" title="Monitored Workspace Directory">
+              <svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-folder"/></svg>
+              <span>Workspace: </span>
+              <strong id="watched-folder-path" style="color: var(--teal); margin-left: 3px;">data/monitored</strong>
+            </div>
+
+            <div class="folder-chip" id="sse-connection-pill" style="border-color: rgba(16, 185, 129, 0.4); color: #10b981;">
+              <span class="pulse-dot active" id="sse-pulse-dot" style="width: 7px; height: 7px; background: #10b981;"></span>
+              <span id="sse-status-text">Live SSE</span>
+            </div>
+          </div>
+
+          <div class="top-right" style="display: flex; align-items: center; gap: 10px; margin-left: auto;">
+            <!-- Role selector (R3) -->
+            <div class="role-selector-pill" id="role-selector-wrap" title="User Role &amp; Permissions (SOC Analyst / Admin / Auditor)">
+              <svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-shield"/></svg>
+              <span class="role-label-text" style="font-weight: 700;">Role:</span>
+              <select class="role-select-input" id="user-role-select" onchange="onRoleChange(this.value)">
+                <option value="SOC Analyst">SOC Analyst</option>
+                <option value="Admin">Admin</option>
+                <option value="Auditor">Auditor (Read-Only)</option>
+              </select>
+            </div>
+
+            <!-- Offline Status Strip -->
+            <span class="offline-status-strip">
+              <span class="badge-dot" style="background:#10b981;"></span>
+              Offline • Local only
+            </span>
+
+            <!-- Command Palette Launcher -->
+            <div class="quick-search" id="quick-search-box" onclick="openCommandPalette()" style="cursor: pointer;" title="Open Command Palette (Ctrl+K)">
+              <svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-search"/></svg>
+              <input type="text" id="global-search-input" placeholder="Search commands, incidents... (Ctrl+K)" readonly style="cursor: pointer;">
+              <span class="search-kbd">Ctrl+K</span>
+            </div>
+
+            <!-- Notification Bell Dropdown -->
+            <div class="notification-bell-wrap" id="notification-bell-container">
+              <button class="notification-bell-btn" id="notification-bell-btn" title="Recent Alerts &amp; Notifications">
+                <svg class="icon" width="16" height="16"><use href="/static/icons.svg#icon-bell"/></svg>
+                <span class="notification-badge-count" id="notification-unread-count" style="display: none;">0</span>
+              </button>
+              <div class="notification-dropdown" id="notification-dropdown">
+                <div class="notification-header">
+                  <span class="notification-title">Security Alerts</span>
+                  <button class="soc-btn soc-btn-sm soc-btn-secondary" onclick="markAllNotificationsRead()" style="padding: 2px 8px; font-size: 0.7rem;">Mark read</button>
+                </div>
+                <div class="notification-list" id="notification-list">
+                  <div class="notification-empty">No active security alerts</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Header Settings Gear (R3) -->
+            <button class="top-icon-btn" id="btn-top-settings" onclick="navigateToPage('settings')" title="Open Policy &amp; Settings">
+              <svg class="icon" width="15" height="15"><use href="/static/icons.svg#icon-settings"/></svg>
+            </button>
+
+            <!-- Lock / Sign Out (R1) -->
+            <button class="top-icon-btn top-lock-btn" id="btn-top-lock" onclick="lockCurrentSession()" title="Lock / Sign Out (Local Passcode)">
+              <svg class="icon" width="15" height="15"><use href="/static/icons.svg#icon-lock"/></svg>
+              <span>Lock</span>
+            </button>
+
+            <div class="top-meta">
+              <span class="meta-label">Uptime:</span>
+              <span class="meta-val" id="uptime-display">00:00:00</span>
+            </div>
+
+            <!-- Ask AI Copilot Header Button -->
+            <button class="soc-btn soc-btn-primary" id="top-copilot-btn" onclick="toggleFloatingAssistant()" style="padding: 6px 14px; font-size: 0.82rem;" title="Open AI Security Assistant">
+              <svg class="icon" width="15" height="15"><use href="/static/icons.svg#icon-bot"/></svg>
+              <span>Ask AI Copilot</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- TOP SECONDARY ROW: Global Filter Dropdowns Bar -->
+        <div class="top-filters-strip" id="top-global-filters" style="display: flex; align-items: center; gap: 8px; width: 100%; padding-top: 8px; border-top: 1px solid var(--border); overflow-x: auto;">
+          <span style="font-size: 0.74rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; margin-right: 4px;">Filters:</span>
+          <select class="filter-select" id="global-filter-source" title="Filter by incident source">
+            <option value="">Source: All</option>
+            <option value="WATCHER">Watcher</option>
+            <option value="UPLOAD">Upload</option>
+            <option value="PROMPT">Prompt</option>
+          </select>
+          <select class="filter-select" id="global-filter-time" title="Filter by time range">
+            <option value="all">Time: All</option>
+            <option value="1h">1 Hour</option>
+            <option value="24h">24 Hours</option>
+            <option value="7d">7 Days</option>
+            <option value="30d">30 Days</option>
+          </select>
+          <!-- Team Filter (R2) -->
+          <select class="filter-select" id="global-filter-team" title="Filter by Assigned Team">
+            <option value="">Team: All</option>
+            <option value="Unassigned">Unassigned</option>
+            <option value="Me">Assigned to Me</option>
+            <option value="SOC Tier 1">SOC Tier 1</option>
+            <option value="SOC Tier 2">SOC Tier 2</option>
+            <option value="Incident Response">Incident Response</option>
+          </select>
+          <!-- Region Filter (R2) -->
+          <select class="filter-select" id="global-filter-region" title="Filter by Configured Watch Region">
+            <option value="">Region: All</option>
+            <option value="monitored">Monitored Root</option>
+            <option value="desktop">Desktop</option>
+            <option value="downloads">Downloads</option>
+          </select>
+          <select class="filter-select" id="global-filter-severity" title="Filter by severity">
+            <option value="">Severity: All</option>
+            <option value="CRITICAL">Critical</option>
+            <option value="HIGH">High</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="LOW">Low</option>
+          </select>
+          <select class="filter-select" id="global-filter-framework" title="Filter by category">
+            <option value="">MITRE: All</option>
+            <option value="exfiltration">Exfiltration (T1048)</option>
+            <option value="credentials">Credentials (T1552)</option>
+            <option value="financial">Financial PII</option>
+            <option value="national_id">National ID</option>
+          </select>
+        </div>
+      </header>
+
+      <!-- PAGE 1: OVERVIEW (R3 WIDGET GRID + R2 CARDS) -->
+      <section class="page active" id="page-overview">
+        <div class="overview-controls-bar">
+          <div>
+            <h2 style="font-size: 1.35rem; font-weight: 700;">Security Operations Center</h2>
+            <p class="subtitle">Real-time data leakage prevention, posture scoring &amp; telemetry grid</p>
+          </div>
+          <div class="overview-actions-group">
+            <div class="service-health-badge" id="overview-service-health" style="display: flex; align-items: center; gap: 6px; font-size: 0.8rem; padding: 4px 10px; border-radius: 999px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #10b981;">
+              <span class="pulse-dot active" style="width: 7px; height: 7px; background: #10b981;"></span>
+              <span id="service-health-text">Service Healthy</span>
+            </div>
+            <span class="meta-label" style="font-size: 0.8rem; color: var(--text-sub);" id="overview-last-updated-text">Updated: just now</span>
+            <button class="soc-btn soc-btn-sm soc-btn-secondary" id="btn-reset-layout" onclick="resetWidgetLayout()" title="Restore default widget positions">
+              <svg class="icon" width="13" height="13"><use href="/static/icons.svg#icon-refresh"/></svg>
+              <span>Reset Layout</span>
+            </button>
+            <button class="soc-btn soc-btn-sm soc-btn-secondary" id="btn-widget-gallery" onclick="openWidgetGalleryModal()" title="Customize visible dashboard widgets">
+              <svg class="icon" width="13" height="13"><use href="/static/icons.svg#icon-settings"/></svg>
+              <span>Widgets</span>
+            </button>
+            <button class="soc-btn soc-btn-sm soc-btn-primary" onclick="loadOverviewData()">
+              <svg class="icon" width="13" height="13"><use href="/static/icons.svg#icon-refresh"/></svg>
+              <span>Refresh</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 12-WIDGET MODULAR SOC GRID -->
+        <div class="soc-widget-grid" id="overview-widget-grid">
+          
+          <!-- WIDGET 1: Violations Summary (col-span-12) -->
+          <div class="soc-widget col-span-12" id="widget-violations" data-widget-id="violations">
+            <div class="widget-header">
+              <div class="widget-title-group">
+                <div class="widget-drag-handle" title="Drag to reorder"><svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-move"/></svg></div>
+                <svg class="icon" width="16" height="16" style="color: var(--teal);"><use href="/static/icons.svg#icon-alert-triangle"/></svg>
+                <h3 class="widget-title">Violations Summary</h3>
+                <span class="widget-badge">LIVE LEDGER</span>
+              </div>
+              <div class="widget-actions">
+                <span style="font-size: 0.72rem; color: var(--text-dim);">Click card to filter Incidents</span>
+              </div>
+            </div>
+            <div class="widget-body">
+              <div class="violations-summary-grid">
+                <div class="violation-pill-card violation-pill-critical" onclick="jumpToIncidentsWithFilter('critical')" title="View Critical Incidents (&gt;=90%)">
+                  <div class="violation-label" style="color: var(--critical);">
+                    <span>Critical Severity</span>
+                    <span class="badge badge-critical" style="font-size: 0.64rem;">90-100%</span>
+                  </div>
+                  <div class="violation-count" id="viol-critical-count" style="color: var(--critical);">0</div>
+                  <span style="font-size: 0.72rem; color: var(--text-dim);">Immediate breach threat</span>
+                </div>
+
+                <div class="violation-pill-card violation-pill-high" onclick="jumpToIncidentsWithFilter('high')" title="View High Incidents (70-89%)">
+                  <div class="violation-label" style="color: var(--high);">
+                    <span>High Risk</span>
+                    <span class="badge badge-high" style="font-size: 0.64rem;">70-89%</span>
+                  </div>
+                  <div class="violation-count" id="viol-high-count" style="color: var(--high);">0</div>
+                  <span style="font-size: 0.72rem; color: var(--text-dim);">Auto-quarantine threshold</span>
+                </div>
+
+                <div class="violation-pill-card violation-pill-medium" onclick="jumpToIncidentsWithFilter('medium')" title="View Medium Incidents (40-69%)">
+                  <div class="violation-label" style="color: var(--medium);">
+                    <span>Medium Risk</span>
+                    <span class="badge badge-medium" style="font-size: 0.64rem;">40-69%</span>
+                  </div>
+                  <div class="violation-count" id="viol-medium-count" style="color: var(--medium);">0</div>
+                  <span style="font-size: 0.72rem; color: var(--text-dim);">Suspicious pattern flag</span>
+                </div>
+
+                <div class="violation-pill-card violation-pill-low" onclick="jumpToIncidentsWithFilter('low')" title="View Low Risk Incidents (&lt;40%)">
+                  <div class="violation-label" style="color: var(--low);">
+                    <span>Low Risk</span>
+                    <span class="badge badge-low" style="font-size: 0.64rem;">0-39%</span>
+                  </div>
+                  <div class="violation-count" id="viol-low-count" style="color: var(--low);">0</div>
+                  <span style="font-size: 0.72rem; color: var(--text-dim);">Normal operational data</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- WIDGET 2: Incident Health Score Gauge (col-span-4) (R2) -->
+          <div class="soc-widget col-span-4" id="widget-health" data-widget-id="health">
+            <div class="widget-header">
+              <div class="widget-title-group">
+                <div class="widget-drag-handle" title="Drag to reorder"><svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-move"/></svg></div>
+                <svg class="icon" width="16" height="16" style="color: var(--teal);"><use href="/static/icons.svg#icon-shield"/></svg>
+                <h3 class="widget-title">Incident Health Score</h3>
+              </div>
+              <div class="widget-actions">
+                <span class="badge badge-info" id="health-score-badge">Operational</span>
+              </div>
+            </div>
+            <div class="widget-body">
+              <div class="soc-gauge-container">
+                <svg class="soc-gauge-svg" viewBox="0 0 220 120">
+                  <defs>
+                    <linearGradient id="gauge-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="var(--critical)"/>
+                      <stop offset="50%" stop-color="var(--medium)"/>
+                      <stop offset="100%" stop-color="var(--teal)"/>
+                    </linearGradient>
+                  </defs>
+                  <path class="soc-gauge-track" d="M 25 105 A 85 85 0 0 1 195 105"/>
+                  <path class="soc-gauge-meter" id="gauge-meter-path" d="M 25 105 A 85 85 0 0 1 195 105" stroke-dasharray="267" stroke-dashoffset="30"/>
+                </svg>
+                <div class="soc-gauge-center">
+                  <div style="display: flex; align-items: baseline;">
+                    <span class="soc-gauge-value" id="health-score-val">100</span>
+                    <span class="soc-gauge-max">/100</span>
+                  </div>
+                  <span class="soc-gauge-label">POSTURE RATING</span>
+                </div>
+                <div class="soc-gauge-status" id="health-score-status">
+                  <svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-check"/></svg>
+                  <span>Excellent • SLA 100%</span>
+                </div>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 8px; margin-top: 4px;">
+                <span>Active Cases: <strong id="health-active-cases" style="color: var(--text-main);">0</strong></span>
+                <span>Avg SLA: <strong id="health-sla-pct" style="color: var(--teal);">100%</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- WIDGET 3: Live Threat Map (col-span-8) -->
+          <div class="soc-widget col-span-8" id="widget-threat-map" data-widget-id="threat-map">
+            <div class="widget-header">
+              <div class="widget-title-group">
+                <div class="widget-drag-handle" title="Drag to reorder"><svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-move"/></svg></div>
+                <svg class="icon" width="16" height="16" style="color: var(--cyan);"><use href="/static/icons.svg#icon-activity"/></svg>
+                <h3 class="widget-title">Live Threat Map</h3>
+              </div>
+              <div class="widget-actions">
+                <div class="soc-tabs soc-tabs-pills" style="margin-bottom: 0;">
+                  <button class="soc-tab active" id="tab-threat-realtime" onclick="switchThreatTab('realtime')">Real-time Scans</button>
+                  <button class="soc-tab" id="tab-threat-historical" onclick="switchThreatTab('historical')">Historical Audits</button>
+                </div>
+              </div>
+            </div>
+            <div class="widget-body">
+              <div class="threat-bar-list" id="threat-map-list">
+                <div class="notification-empty">Awaiting live scan telemetry...</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- WIDGET 4: Data Flow Topology SVG Graph (col-span-8) -->
+          <div class="soc-widget col-span-8" id="widget-topology" data-widget-id="topology">
+            <div class="widget-header">
+              <div class="widget-title-group">
+                <div class="widget-drag-handle" title="Drag to reorder"><svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-move"/></svg></div>
+                <svg class="icon" width="16" height="16" style="color: var(--violet);"><use href="/static/icons.svg#icon-network"/></svg>
+                <h3 class="widget-title">Data Flow Topology Graph</h3>
+                <span class="widget-badge">ZERO LEAKAGE</span>
+              </div>
+              <div class="widget-actions">
+                <span style="font-size: 0.72rem; color: var(--teal); display: flex; align-items: center; gap: 4px;"><span class="badge-dot" style="background:#10b981;"></span> Air-Gapped Local</span>
+              </div>
+            </div>
+            <div class="widget-body" style="padding: 0;">
+              <div class="topology-container">
+                <svg class="topology-svg" viewBox="0 0 700 210">
+                  <defs>
+                    <linearGradient id="edge-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="var(--cyan)" stop-opacity="0.2"/>
+                      <stop offset="100%" stop-color="var(--teal)" stop-opacity="0.8"/>
+                    </linearGradient>
+                  </defs>
+
+                  <!-- Paths -->
+                  <path class="topology-edge" id="topo-p1" d="M 100 105 L 240 105"/>
+                  <path class="topology-edge" id="topo-p2" d="M 240 105 L 390 105"/>
+                  <path class="topology-edge" id="topo-p3" d="M 390 105 C 460 70, 480 50, 560 50"/>
+                  <path class="topology-edge" id="topo-p4" d="M 390 105 C 460 140, 480 160, 560 160"/>
+
+                  <!-- Animated pulse circles along paths -->
+                  <circle r="4" class="topology-pulse-dot">
+                    <animateMotion dur="2.5s" repeatCount="indefinite" path="M 100 105 L 240 105"/>
+                  </circle>
+                  <circle r="4" class="topology-pulse-dot" fill="var(--cyan)">
+                    <animateMotion dur="2.8s" repeatCount="indefinite" path="M 240 105 L 390 105"/>
+                  </circle>
+                  <circle r="4" class="topology-pulse-dot" fill="var(--critical)">
+                    <animateMotion dur="3.2s" repeatCount="indefinite" path="M 390 105 C 460 70, 480 50, 560 50"/>
+                  </circle>
+                  <circle r="4" class="topology-pulse-dot" fill="var(--low)">
+                    <animateMotion dur="3s" repeatCount="indefinite" path="M 390 105 C 460 140, 480 160, 560 160"/>
+                  </circle>
+
+                  <!-- Node 1: Monitored Workspace -->
+                  <g transform="translate(40, 80)">
+                    <rect width="110" height="50" rx="8" fill="var(--bg-2)" stroke="var(--cyan)" stroke-width="1.5"/>
+                    <text x="55" y="24" fill="var(--text-main)" font-size="11" font-weight="700" text-anchor="middle">Workspace</text>
+                    <text x="55" y="40" fill="var(--cyan)" font-size="9" font-family="var(--font-mono)" text-anchor="middle">data/monitored</text>
+                  </g>
+
+                  <!-- Node 2: Watchdog Scanner -->
+                  <g transform="translate(195, 80)">
+                    <rect width="110" height="50" rx="8" fill="var(--bg-2)" stroke="var(--teal)" stroke-width="1.5"/>
+                    <text x="55" y="24" fill="var(--text-main)" font-size="11" font-weight="700" text-anchor="middle">Watchdog</text>
+                    <text x="55" y="40" fill="var(--teal)" font-size="9" text-anchor="middle">Chunked Scanner</text>
+                  </g>
+
+                  <!-- Node 3: IsolationForest ML -->
+                  <g transform="translate(345, 80)">
+                    <rect width="110" height="50" rx="8" fill="var(--bg-2)" stroke="var(--violet)" stroke-width="1.5"/>
+                    <text x="55" y="24" fill="var(--text-main)" font-size="11" font-weight="700" text-anchor="middle">IsolationForest</text>
+                    <text x="55" y="40" fill="var(--violet)" font-size="9" text-anchor="middle">Hybrid Fusion</text>
+                  </g>
+
+                  <!-- Node 4: Quarantine Vault (High/Crit) -->
+                  <g transform="translate(510, 25)">
+                    <rect width="120" height="50" rx="8" fill="var(--bg-2)" stroke="var(--critical)" stroke-width="1.5"/>
+                    <text x="60" y="24" fill="var(--text-main)" font-size="11" font-weight="700" text-anchor="middle">Quarantine Vault</text>
+                    <text x="60" y="40" fill="var(--critical)" font-size="9" font-weight="700" text-anchor="middle">Auto-Isolated</text>
+                  </g>
+
+                  <!-- Node 5: Incident DB -->
+                  <g transform="translate(510, 135)">
+                    <rect width="120" height="50" rx="8" fill="var(--bg-2)" stroke="var(--low)" stroke-width="1.5"/>
+                    <text x="60" y="24" fill="var(--text-main)" font-size="11" font-weight="700" text-anchor="middle">Incident Store</text>
+                    <text x="60" y="40" fill="var(--low)" font-size="9" text-anchor="middle">Audit Ledger</text>
+                  </g>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- WIDGET 5: Telemetry & KPI Strip (col-span-4) -->
+          <div class="soc-widget col-span-4" id="widget-kpi-strip" data-widget-id="kpi-strip">
+            <div class="widget-header">
+              <div class="widget-title-group">
+                <div class="widget-drag-handle" title="Drag to reorder"><svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-move"/></svg></div>
+                <svg class="icon" width="16" height="16" style="color: var(--teal);"><use href="/static/icons.svg#icon-layout-grid"/></svg>
+                <h3 class="widget-title">Core SOC Telemetry</h3>
+              </div>
+            </div>
+            <div class="widget-body" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); padding: var(--space-3);">
+              <div class="soc-kpi-tile">
+                <div class="kpi-tile-header">
+                  <span class="kpi-title">Files Scanned</span>
+                  <button class="kpi-info-btn" title="Total unique files processed by engine" aria-label="Info"><svg class="icon" width="12" height="12"><use href="/static/icons.svg#icon-shield"/></svg></button>
+                </div>
+                <span class="kpi-val" id="kpi-files-scanned">0</span>
+              </div>
+
+              <div class="soc-kpi-tile">
+                <div class="kpi-tile-header">
+                  <span class="kpi-title">Open Incidents</span>
+                  <button class="kpi-info-btn" title="Incidents requiring investigation" aria-label="Info"><svg class="icon" width="12" height="12"><use href="/static/icons.svg#icon-alert-triangle"/></svg></button>
+                </div>
+                <span class="kpi-val" id="kpi-open-incidents" style="color: var(--high);">0</span>
+              </div>
+
+              <div class="soc-kpi-tile">
+                <div class="kpi-tile-header">
+                  <span class="kpi-title">Quarantined</span>
+                  <button class="kpi-info-btn" title="Files isolated in vault" aria-label="Info"><svg class="icon" width="12" height="12"><use href="/static/icons.svg#icon-lock"/></svg></button>
+                </div>
+                <span class="kpi-val" id="kpi-quarantined" style="color: var(--violet);">0</span>
+              </div>
+
+              <div class="soc-kpi-tile">
+                <div class="kpi-tile-header">
+                  <span class="kpi-title">Blocked Uploads</span>
+                  <button class="kpi-info-btn" title="Prevented before acceptance" aria-label="Info"><svg class="icon" width="12" height="12"><use href="/static/icons.svg#icon-trash"/></svg></button>
+                </div>
+                <span class="kpi-val" id="kpi-blocked" style="color: var(--critical);">0</span>
+              </div>
+
+              <div class="soc-kpi-tile">
+                <div class="kpi-tile-header">
+                  <span class="kpi-title">Detection Rate</span>
+                  <button class="kpi-info-btn" title="Percentage of scanned files flagged" aria-label="Info"><svg class="icon" width="12" height="12"><use href="/static/icons.svg#icon-activity"/></svg></button>
+                </div>
+                <span class="kpi-val" id="kpi-detection-rate" style="color: var(--teal);">0.0%</span>
+              </div>
+
+              <div class="soc-kpi-tile">
+                <div class="kpi-tile-header">
+                  <span class="kpi-title">Avg Risk Score</span>
+                  <button class="kpi-info-btn" title="Mean risk across all files" aria-label="Info"><svg class="icon" width="12" height="12"><use href="/static/icons.svg#icon-shield"/></svg></button>
+                </div>
+                <span class="kpi-val" id="kpi-avg-risk">0.0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- WIDGET 6: Risk by File Type Donut (col-span-4) -->
+          <div class="soc-widget col-span-4" id="widget-file-types" data-widget-id="file-types">
+            <div class="widget-header">
+              <div class="widget-title-group">
+                <div class="widget-drag-handle" title="Drag to reorder"><svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-move"/></svg></div>
+                <svg class="icon" width="16" height="16" style="color: var(--cyan);"><use href="/static/icons.svg#icon-file-text"/></svg>
+                <h3 class="widget-title">Risk by File Type</h3>
+              </div>
+            </div>
+            <div class="widget-body">
+              <div class="donut-widget-layout">
+                <div class="donut-chart-wrapper">
+                  <svg id="category-donut-svg" viewBox="0 0 160 160"></svg>
+                  <div class="donut-center-text">
+                    <span id="donut-total-count">0</span>
+                    <small>Matches</small>
+                  </div>
+                </div>
+                <div class="legend-box" id="category-legend"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- WIDGET 7: Event Types & Velocity (col-span-4) -->
+          <div class="soc-widget col-span-4" id="widget-event-trends" data-widget-id="event-trends">
+            <div class="widget-header">
+              <div class="widget-title-group">
+                <div class="widget-drag-handle" title="Drag to reorder"><svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-move"/></svg></div>
+                <svg class="icon" width="16" height="16" style="color: var(--teal);"><use href="/static/icons.svg#icon-activity"/></svg>
+                <h3 class="widget-title">Watchdog Event Velocity</h3>
+              </div>
+            </div>
+            <div class="widget-body">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2);" id="event-types-chips-grid">
+                <div class="chip-source" style="padding: 8px 12px; display: flex; justify-content: space-between; font-size: 0.8rem;">
+                  <span>Created:</span>
+                  <strong id="evt-created-count" style="color: var(--teal);">0</strong>
+                </div>
+                <div class="chip-source" style="padding: 8px 12px; display: flex; justify-content: space-between; font-size: 0.8rem;">
+                  <span>Modified:</span>
+                  <strong id="evt-modified-count" style="color: var(--cyan);">0</strong>
+                </div>
+                <div class="chip-source" style="padding: 8px 12px; display: flex; justify-content: space-between; font-size: 0.8rem;">
+                  <span>Moved:</span>
+                  <strong id="evt-moved-count" style="color: var(--medium);">0</strong>
+                </div>
+                <div class="chip-source" style="padding: 8px 12px; display: flex; justify-content: space-between; font-size: 0.8rem;">
+                  <span>Purged:</span>
+                  <strong id="evt-deleted-count" style="color: var(--critical);">0</strong>
+                </div>
+              </div>
+              <div style="margin-top: var(--space-3); padding-top: var(--space-2); border-top: 1px solid var(--border); font-size: 0.74rem; color: var(--text-dim); display: flex; justify-content: space-between;">
+                <span>Audit Window: <strong>24 Hours</strong></span>
+                <span>Burst Threshold: <strong>Safe</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- WIDGET 8: Incident Lifecycle Pipeline (col-span-4) -->
+          <div class="soc-widget col-span-4" id="widget-lifecycle" data-widget-id="lifecycle">
+            <div class="widget-header">
+              <div class="widget-title-group">
+                <div class="widget-drag-handle" title="Drag to reorder"><svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-move"/></svg></div>
+                <svg class="icon" width="16" height="16" style="color: var(--violet);"><use href="/static/icons.svg#icon-clock"/></svg>
+                <h3 class="widget-title">Incident Lifecycle</h3>
+              </div>
+            </div>
+            <div class="widget-body">
+              <div class="lifecycle-pipeline">
+                <div class="lifecycle-step">
+                  <span class="lifecycle-step-num" id="life-detected-count">0</span>
+                  <span class="lifecycle-step-name">Detected</span>
+                </div>
+                <svg class="icon" width="14" height="14" style="color: var(--text-dim);"><use href="/static/icons.svg#icon-chevron-right"/></svg>
+                <div class="lifecycle-step">
+                  <span class="lifecycle-step-num" id="life-quarantined-count" style="color: var(--violet);">0</span>
+                  <span class="lifecycle-step-name">Vaulted</span>
+                </div>
+                <svg class="icon" width="14" height="14" style="color: var(--text-dim);"><use href="/static/icons.svg#icon-chevron-right"/></svg>
+                <div class="lifecycle-step">
+                  <span class="lifecycle-step-num" id="life-open-count" style="color: var(--high);">0</span>
+                  <span class="lifecycle-step-name">Under Review</span>
+                </div>
+                <svg class="icon" width="14" height="14" style="color: var(--text-dim);"><use href="/static/icons.svg#icon-chevron-right"/></svg>
+                <div class="lifecycle-step">
+                  <span class="lifecycle-step-num" id="life-resolved-count" style="color: var(--low);">0</span>
+                  <span class="lifecycle-step-name">Resolved</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- WIDGET 9: Global Threat Radar Table (col-span-12) -->
+          <div class="soc-widget col-span-12" id="widget-radar" data-widget-id="radar">
+            <div class="widget-header">
+              <div class="widget-title-group">
+                <div class="widget-drag-handle" title="Drag to reorder"><svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-move"/></svg></div>
+                <svg class="icon" width="16" height="16" style="color: var(--critical);"><use href="/static/icons.svg#icon-alert-triangle"/></svg>
+                <h3 class="widget-title">Global Threat Radar</h3>
+                <span class="widget-badge">TOP 5 RISKY ENTITIES</span>
+              </div>
+              <div class="widget-actions">
+                <button class="soc-btn soc-btn-sm soc-btn-secondary" onclick="switchPage('incidents')">
+                  <span>View All Registry</span>
+                  <svg class="icon" width="12" height="12"><use href="/static/icons.svg#icon-chevron-right"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="widget-body" style="padding: 0;">
+              <div class="soc-table-container" style="border: none;">
+                <table class="soc-table">
+                  <thead>
+                    <tr>
+                      <th>Entity File Path</th>
+                      <th>Risk Severity</th>
+                      <th>Lifecycle Status</th>
+                      <th>Source</th>
+                      <th>Assignee</th>
+                      <th>Detection Factors</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="top-risky-table-body">
+                    <tr><td colspan="7" class="empty-state">No risky files detected yet. Drop files into data/monitored to evaluate.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- WIDGET 10: System Resources & Worker Pool (col-span-4) -->
+          <div class="soc-widget col-span-4" id="widget-resources" data-widget-id="resources">
+            <div class="widget-header">
+              <div class="widget-title-group">
+                <div class="widget-drag-handle" title="Drag to reorder"><svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-move"/></svg></div>
+                <svg class="icon" width="16" height="16" style="color: var(--teal);"><use href="/static/icons.svg#icon-shield"/></svg>
+                <h3 class="widget-title">System &amp; Engine Health</h3>
+              </div>
+              <div class="widget-actions">
+                <span class="badge badge-low"><span class="badge-dot pulse"></span> Healthy</span>
+              </div>
+            </div>
+            <div class="widget-body">
+              <div class="resource-bar-row">
+                <div class="resource-bar-header">
+                  <span>Watchdog Observer</span>
+                  <span id="resource-watchdog-state" style="color: var(--teal);">Running (1 Thread)</span>
+                </div>
+                <div class="resource-bar-track"><div class="resource-bar-fill" style="width: 100%;"></div></div>
+              </div>
+
+              <div class="resource-bar-row">
+                <div class="resource-bar-header">
+                  <span>IsolationForest Memory</span>
+                  <span id="resource-model-state" style="color: var(--violet);">Loaded &amp; Fitted</span>
+                </div>
+                <div class="resource-bar-track"><div class="resource-bar-fill" style="width: 85%; background: var(--violet);"></div></div>
+              </div>
+
+              <div class="resource-bar-row">
+                <div class="resource-bar-header">
+                  <span>Quarantine Vault Capacity</span>
+                  <span style="color: var(--cyan);">Air-Gapped Ready</span>
+                </div>
+                <div class="resource-bar-track"><div class="resource-bar-fill" style="width: 40%; background: var(--cyan);"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- WIDGET 11: Active Policy Rules Summary (col-span-4) -->
+          <div class="soc-widget col-span-4" id="widget-policy" data-widget-id="policy">
+            <div class="widget-header">
+              <div class="widget-title-group">
+                <div class="widget-drag-handle" title="Drag to reorder"><svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-move"/></svg></div>
+                <svg class="icon" width="16" height="16" style="color: var(--medium);"><use href="/static/icons.svg#icon-settings"/></svg>
+                <h3 class="widget-title">Active Policy Guardrails</h3>
+              </div>
+            </div>
+            <div class="widget-body">
+              <div style="display: flex; flex-direction: column; gap: var(--space-2);">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm);">
+                  <span style="font-size: 0.8rem;">Suspicious Incident Cutoff</span>
+                  <span class="badge badge-medium" id="policy-suspicious-badge">40% Score</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm);">
+                  <span style="font-size: 0.8rem;">Quarantine Enforcement Cutoff</span>
+                  <span class="badge badge-high" id="policy-quarantine-badge">70% Score</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm);">
+                  <span style="font-size: 0.8rem;">Regex &amp; Luhn Validator Suite</span>
+                  <span class="badge badge-low">8 Rules Active</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- WIDGET 12: Quick Actions Tile (col-span-4) -->
+          <div class="soc-widget col-span-4" id="widget-actions" data-widget-id="actions">
+            <div class="widget-header">
+              <div class="widget-title-group">
+                <div class="widget-drag-handle" title="Drag to reorder"><svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-move"/></svg></div>
+                <svg class="icon" width="16" height="16" style="color: var(--teal);"><use href="/static/icons.svg#icon-bot"/></svg>
+                <h3 class="widget-title">SOC Quick Operations</h3>
+              </div>
+            </div>
+            <div class="widget-body">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2);">
+                <button class="soc-btn soc-btn-sm soc-btn-secondary" onclick="triggerModelRetrain()" style="padding: 10px 8px; font-size: 0.76rem; justify-content: flex-start;">
+                  <svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-refresh"/></svg>
+                  <span>Retrain ML</span>
+                </button>
+                <button class="soc-btn soc-btn-sm soc-btn-secondary" onclick="switchPage('upload-review'); pasteFromClipboard();" style="padding: 10px 8px; font-size: 0.76rem; justify-content: flex-start;">
+                  <svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-copy"/></svg>
+                  <span>Paste Review</span>
+                </button>
+                <button class="soc-btn soc-btn-sm soc-btn-secondary" onclick="exportAuditCsv()" style="padding: 10px 8px; font-size: 0.76rem; justify-content: flex-start;">
+                  <svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-download"/></svg>
+                  <span>Export CSV</span>
+                </button>
+                <button class="soc-btn soc-btn-sm soc-btn-secondary" onclick="switchPage('settings'); runSystemSelfTest();" style="padding: 10px 8px; font-size: 0.76rem; justify-content: flex-start;">
+                  <svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-shield"/></svg>
+                  <span>Run Self-Test</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- WIDGET GALLERY MODAL -->
+      <div class="modal-backdrop" id="widget-gallery-modal" onclick="onWidgetGalleryBackdropClick(event)">
+        <div class="soc-modal" role="dialog" aria-modal="true" aria-label="Customize Widgets">
+          <div class="modal-header">
+            <h3 class="modal-title">Customize Dashboard Widgets</h3>
+            <button class="drawer-close-btn" onclick="closeWidgetGalleryModal()">&times;</button>
+          </div>
+          <div class="modal-body">
+            <p style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: var(--space-4);">Select widgets to display on the SOC Overview grid. Changes are saved automatically.</p>
+            <div id="widget-gallery-checkboxes" style="display: flex; flex-direction: column; gap: var(--space-2);"></div>
+          </div>
+          <div class="modal-footer">
+            <button class="soc-btn soc-btn-secondary" onclick="resetWidgetLayout()">Restore Defaults</button>
+            <button class="soc-btn soc-btn-primary" onclick="closeWidgetGalleryModal()">Done</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE 2: LIVE MONITOR -->
+      <section class="page" id="page-live-monitor">
+        <div class="page-header">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+              <span style="font-family: var(--font-mono); font-size: 0.76rem; color: var(--teal);">MONITOR /</span>
+              <h2 style="font-size: 1.35rem; font-weight: 700;">Real-Time File System Monitor</h2>
+            </div>
+            <p class="subtitle">Live event stream from dedicated <code>data/monitored</code> kernel filesystem watcher</p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div class="folder-chip" id="live-stream-status-pill" style="border-color: rgba(16, 185, 129, 0.4); color: #10b981;">
+              <span class="pulse-dot active" style="width: 7px; height: 7px; background: #10b981;"></span>
+              <span id="live-stream-status-text">SSE Live Feed</span>
+            </div>
+            <button class="soc-btn soc-btn-sm soc-btn-secondary" id="btn-pause-live-stream" onclick="toggleLiveFeedPause()" title="Pause or Resume Live Stream">
+              <svg class="icon" width="13" height="13"><use href="/static/icons.svg#icon-clock"/></svg>
+              <span id="live-pause-btn-text">Pause Stream</span>
+            </button>
+            <button class="soc-btn soc-btn-sm soc-btn-secondary" onclick="clearLiveFeed()" title="Clear Live Terminal Feed">
+              <svg class="icon" width="13" height="13"><use href="/static/icons.svg#icon-trash"/></svg>
+              <span>Clear Feed</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter chips for event stream -->
+        <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+          <button class="soc-btn soc-btn-sm soc-btn-primary" id="live-filter-all" onclick="filterLiveFeed('all')">All Events</button>
+          <button class="soc-btn soc-btn-sm soc-btn-secondary" id="live-filter-created" onclick="filterLiveFeed('created')">Created</button>
+          <button class="soc-btn soc-btn-sm soc-btn-secondary" id="live-filter-modified" onclick="filterLiveFeed('modified')">Modified</button>
+          <button class="soc-btn soc-btn-sm soc-btn-secondary" id="live-filter-moved" onclick="filterLiveFeed('moved')">Moved</button>
+          <button class="soc-btn soc-btn-sm soc-btn-secondary" id="live-filter-deleted" onclick="filterLiveFeed('deleted')">Deleted</button>
+          <button class="soc-btn soc-btn-sm soc-btn-secondary" id="live-filter-scanned" onclick="filterLiveFeed('scanned')">Scanned / Risky</button>
+        </div>
+
+        <div class="soc-widget" style="padding: 0; overflow: hidden;">
+          <div class="live-stream-header">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div class="terminal-dots">
+                <span class="terminal-dot terminal-dot-red"></span>
+                <span class="terminal-dot terminal-dot-yellow"></span>
+                <span class="terminal-dot terminal-dot-green"></span>
+              </div>
+              <span style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted);">watchdog://data/monitored - Kernel Event Bus</span>
+            </div>
+            <span class="badge badge-normal" id="live-events-counter" style="font-size: 0.7rem;">0 Events Buffered</span>
+          </div>
+          <div class="live-stream-feed" id="live-timeline-feed">
+            <div class="live-event-row" data-event-type="system">
+              <span class="live-event-time">[System]</span>
+              <span class="live-event-type-badge scanned">INFO</span>
+              <span class="live-event-path">Watchdog active on <code>data/monitored</code>. Drop or modify a file to inspect real-time sliding row events.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 3: INCIDENTS -->
+      <section class="page" id="page-incidents">
+        <div class="page-header">
+          <div>
+            <h2>Security Incidents Registry</h2>
+            <p class="subtitle">Filter, inspect, and take action on flagged documents</p>
+          </div>
+        </div>
+
+        <div class="glass-card filter-card">
+          <div class="filter-controls" style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <input type="text" id="incident-search-input" placeholder="Filter by filename or keyword..." class="input-field" style="flex: 2; min-width: 200px;">
+            <select id="incident-status-filter" class="select-field" style="flex: 1; min-width: 140px;">
+              <option value="">All Statuses</option>
+              <option value="open">Open / Flagged</option>
+              <option value="quarantined">Quarantined</option>
+              <option value="blocked">Blocked</option>
+              <option value="normal">Normal</option>
+              <option value="released">Released</option>
+            </select>
+            <select id="incident-severity-filter" class="select-field" style="flex: 1; min-width: 140px;">
+              <option value="">All Severities</option>
+              <option value="critical">Critical (90-100%)</option>
+              <option value="high">High (70-89%)</option>
+              <option value="medium">Medium (40-69%)</option>
+              <option value="low">Low (0-39%)</option>
+            </select>
+            <select id="incident-sort-select" class="select-field" style="flex: 1; min-width: 140px;">
+              <option value="risk_desc">Highest Risk First</option>
+              <option value="risk_asc">Lowest Risk First</option>
+              <option value="date_desc">Most Recent First</option>
+              <option value="date_asc">Oldest First</option>
+            </select>
+          </div>
+
+          <!-- Bulk Selection Toolbar -->
+          <div id="incident-bulk-bar" style="display: none; align-items: center; justify-content: space-between; margin-top: 12px; padding: 10px 14px; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 8px;">
+            <span id="bulk-selection-count" style="font-size: 0.85rem; font-weight: 600; color: var(--accent-cyan);">0 items selected</span>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-sm btn-secondary" onclick="executeBulkIncidentAction('dismiss')">Bulk Dismiss (Normal)</button>
+              <button class="btn btn-sm btn-primary" onclick="executeBulkIncidentAction('quarantine')">Bulk Quarantine</button>
+              <button class="btn btn-sm btn-secondary" onclick="exportSelectedIncidentsCsv()">Export CSV</button>
+              <button class="btn btn-sm btn-danger" onclick="executeBulkIncidentAction('delete')">Bulk Delete</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-card full-width-card">
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 38px;"><input type="checkbox" id="incident-select-all" onchange="toggleSelectAllIncidents(this.checked)"></th>
+                  <th>Status</th>
+                  <th>Risk Score</th>
+                  <th>File Name & Path</th>
+                  <th>Detections</th>
+                  <th>Scanned Time</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="incidents-table-body">
+                <tr><td colspan="7" class="empty-state">No incidents found matching criteria.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div id="incidents-pagination-bar" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-top: 1px solid var(--border-color); font-size: 0.85rem; color: var(--text-sub);"></div>
+        </div>
+      </section>
+
+      <!-- PAGE: SCAN REPORTS (R5 REPLICA) -->
+      <section class="page" id="page-scan-reports">
+        <div class="page-header">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+              <span style="font-family: var(--font-mono); font-size: 0.76rem; color: var(--teal);">REPORTS /</span>
+              <h2 style="font-size: 1.35rem; font-weight: 700; display: inline-flex; align-items: center; gap: 8px;">
+                <span id="scan-report-title">Weekly Enterprise Threat Audit</span>
+                <button class="soc-btn soc-btn-sm soc-btn-secondary" id="btn-rename-report-title" onclick="editScanReportTitle()" title="Rename report" style="padding: 3px 6px;">
+                  <svg class="icon" width="13" height="13"><use href="/static/icons.svg#icon-edit"/></svg>
+                </button>
+              </h2>
+            </div>
+            <p class="subtitle">Multi-engine artifact inspection, compliance verification, and findings ledger</p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button class="soc-btn soc-btn-sm soc-btn-primary" id="btn-create-workflow-report-header" onclick="navigateToPage('workflows')">
+              <svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-activity"/></svg>
+              <span>Create a Workflow</span>
+            </button>
+            <span class="badge badge-low"><span class="badge-dot pulse"></span> 5 Engines Operational</span>
+            <button class="soc-btn soc-btn-sm soc-btn-secondary" onclick="exportScanReportsCsv()">
+              <svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-download"/></svg>
+              <span>Export CSV</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- R5 SCAN REPORTS SECONDARY NAV -->
+        <div class="reports-secondary-nav" id="reports-secondary-nav">
+          <button class="reports-subnav-btn active" data-subtab="dashboard" onclick="switchReportsSubTab('dashboard')">
+            <svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-grid"/></svg>
+            <span>Dashboard</span>
+          </button>
+          <button class="reports-subnav-btn" data-subtab="engines" onclick="switchReportsSubTab('engines')">
+            <svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-cpu"/></svg>
+            <span>Engines</span>
+          </button>
+          <button class="reports-subnav-btn" data-subtab="watched-folders" onclick="switchReportsSubTab('watched-folders')">
+            <svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-folder"/></svg>
+            <span>Watched Folders</span>
+          </button>
+          <button class="reports-subnav-btn" data-subtab="reports" onclick="switchReportsSubTab('reports')">
+            <svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-file-text"/></svg>
+            <span>Reports</span>
+          </button>
+          <button class="reports-subnav-btn" data-subtab="workflows" onclick="switchReportsSubTab('workflows')">
+            <svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-activity"/></svg>
+            <span>Workflows</span>
+          </button>
+          <button class="reports-subnav-btn" data-subtab="settings" onclick="navigateToPage('settings')">
+            <svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-settings"/></svg>
+            <span>Settings</span>
+          </button>
+          <div style="flex: 1;"></div>
+          <button class="reports-subnav-btn" onclick="navigateToPage('overview')" title="Return to Overview" style="color: var(--text-dim);">
+            <svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-chevron-right"/></svg>
+            <span>Exit</span>
+          </button>
+        </div>
+
+        <!-- 1. DASHBOARD SUBTAB CONTAINER -->
+        <div id="reports-subtab-dashboard" class="reports-subtab-pane">
+          <div id="scan-reports-container" style="display: flex; flex-direction: column; gap: var(--space-4);">
+          <!-- 1. 5 Detection Engines Panel -->
+          <div class="soc-widget" style="padding: var(--space-4);">
+            <div class="widget-header" style="margin-bottom: var(--space-3);">
+              <div class="widget-title-group">
+                <svg class="icon" width="16" height="16" style="color: var(--teal);"><use href="/static/icons.svg#icon-shield"/></svg>
+                <h3 class="widget-title">Active Detection Engines Suite</h3>
+                <span class="widget-badge">100% OFFLINE</span>
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-3);" id="detection-engines-grid">
+              <div class="engine-tile" style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                  <strong style="font-size: 0.82rem; color: var(--text-main);">1. Regex Pattern Engine</strong>
+                  <span class="badge badge-low" style="font-size: 0.65rem;">Active</span>
+                </div>
+                <div style="font-size: 0.74rem; color: var(--text-dim);">8 Rules Armed (PII, PAN, IBAN, Tokens)</div>
+              </div>
+
+              <div class="engine-tile" style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                  <strong style="font-size: 0.82rem; color: var(--text-main);">2. Luhn Checksum</strong>
+                  <span class="badge badge-low" style="font-size: 0.65rem;">Active</span>
+                </div>
+                <div style="font-size: 0.74rem; color: var(--text-dim);">Mod-10 Credit Card Verification</div>
+              </div>
+
+              <div class="engine-tile" style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                  <strong style="font-size: 0.82rem; color: var(--text-main);">3. National ID Verifier</strong>
+                  <span class="badge badge-low" style="font-size: 0.65rem;">Active</span>
+                </div>
+                <div style="font-size: 0.74rem; color: var(--text-dim);">Aadhaar Verhoeff &amp; PAN Check</div>
+              </div>
+
+              <div class="engine-tile" style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                  <strong style="font-size: 0.82rem; color: var(--text-main);">4. IsolationForest ML</strong>
+                  <span class="badge badge-low" style="font-size: 0.65rem;">Active</span>
+                </div>
+                <div style="font-size: 0.74rem; color: var(--text-dim);">50 Trees Fitted • Unsupervised Anomaly</div>
+              </div>
+
+              <div class="engine-tile" style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                  <strong style="font-size: 0.82rem; color: var(--text-main);">5. Shannon Entropy</strong>
+                  <span class="badge badge-low" style="font-size: 0.65rem;">Active</span>
+                </div>
+                <div style="font-size: 0.74rem; color: var(--text-dim);">Token Density &amp; High-Entropy Secrets</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. 8 Summary Filter Tiles -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: var(--space-2);" id="scan-report-filter-tiles">
+            <!-- Populated by JS -->
+          </div>
+
+          <!-- Bulk Selection Toolbar for Reports -->
+          <div id="reports-bulk-bar" style="display: none; align-items: center; justify-content: space-between; padding: 10px 16px; background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: var(--radius-md);">
+            <span id="reports-bulk-count" style="font-size: 0.85rem; font-weight: 600; color: var(--cyan);">0 items selected</span>
+            <div style="display: flex; gap: 8px;">
+              <button class="soc-btn soc-btn-sm soc-btn-primary" onclick="executeBulkReportAction('quarantine')">Bulk Quarantine</button>
+              <button class="soc-btn soc-btn-sm soc-btn-secondary" onclick="executeBulkReportAction('dismiss')">Bulk Dismiss</button>
+              <button class="soc-btn soc-btn-sm soc-btn-secondary" onclick="exportSelectedReportsCsv()">Export Selected</button>
+              <button class="soc-btn soc-btn-sm soc-btn-danger" onclick="executeBulkReportAction('delete')">Bulk Delete</button>
+            </div>
+          </div>
+
+          <!-- 3. Multi-Select Artifacts Table -->
+          <div class="soc-widget" style="padding: 0; overflow: hidden;">
+            <div class="soc-table-container">
+              <table class="soc-table" id="scan-reports-table">
+                <thead>
+                  <tr>
+                    <th style="width: 38px;"><input type="checkbox" id="reports-select-all" onchange="toggleSelectAllReports(this.checked)" style="accent-color: var(--teal); cursor: pointer;"></th>
+                    <th>File Path</th>
+                    <th>Risk Severity</th>
+                    <th>Status</th>
+                    <th>Confidence</th>
+                    <th>Primary Detection</th>
+                    <th>Source</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="scan-reports-table-body">
+                  <tr><td colspan="8" class="empty-state">Loading scan report findings...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        </div>
+
+        <!-- 2. ENGINES SUBTAB CONTAINER -->
+        <div id="reports-subtab-engines" class="reports-subtab-pane" style="display: none;">
+          <div class="soc-widget" style="padding: var(--space-4);">
+            <div class="widget-header" style="margin-bottom: var(--space-3);">
+              <div class="widget-title-group">
+                <svg class="icon" width="16" height="16" style="color: var(--teal);"><use href="/static/icons.svg#icon-cpu"/></svg>
+                <h3 class="widget-title">Detection Engines Catalog</h3>
+                <span class="widget-badge">5 ACTIVE OFFLINE ENGINES</span>
+              </div>
+              <button class="soc-btn soc-btn-sm soc-btn-secondary" onclick="loadEnginesCatalog()">
+                <svg class="icon" width="13" height="13"><use href="/static/icons.svg#icon-refresh"/></svg>
+                <span>Refresh</span>
+              </button>
+            </div>
+            <div class="engine-rows-container" id="engines-catalog-list">
+              <div class="empty-state">Loading detection engines...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. WATCHED FOLDERS SUBTAB CONTAINER (DISKS) -->
+        <div id="reports-subtab-watched-folders" class="reports-subtab-pane" style="display: none;">
+          <div class="soc-widget" style="padding: var(--space-4);">
+            <div class="widget-header" style="margin-bottom: var(--space-3);">
+              <div class="widget-title-group">
+                <svg class="icon" width="16" height="16" style="color: var(--teal);"><use href="/static/icons.svg#icon-folder"/></svg>
+                <h3 class="widget-title">Watched Folders &amp; Root Scopes</h3>
+                <span class="widget-badge">SANDBOX SCOPED</span>
+              </div>
+              <button class="soc-btn soc-btn-sm soc-btn-secondary" onclick="loadWatchedFoldersList()">
+                <svg class="icon" width="13" height="13"><use href="/static/icons.svg#icon-refresh"/></svg>
+                <span>Refresh</span>
+              </button>
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: var(--space-3); padding: 10px 14px; background: rgba(20, 184, 166, 0.08); border-left: 3px solid var(--teal); border-radius: 4px;">
+              <strong>Scoped-Path Safety Notice:</strong> The active real-time watcher is strictly confined to <code>data/monitored/</code> to protect system security. Host directories (Desktop, Downloads) remain isolated and protected out-of-bounds.
+            </div>
+            <div id="watched-folders-cards-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-3);">
+              <div class="empty-state">Loading watched folders...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. PAST REPORTS SUBTAB CONTAINER -->
+        <div id="reports-subtab-reports" class="reports-subtab-pane" style="display: none;">
+          <div class="soc-widget" style="padding: var(--space-4);">
+            <div class="widget-header" style="margin-bottom: var(--space-3);">
+              <div class="widget-title-group">
+                <svg class="icon" width="16" height="16" style="color: var(--teal);"><use href="/static/icons.svg#icon-file-text"/></svg>
+                <h3 class="widget-title">Past Scan Reports Archive</h3>
+              </div>
+              <button class="soc-btn soc-btn-sm soc-btn-secondary" onclick="exportScanReportsCsv()">
+                <svg class="icon" width="13" height="13"><use href="/static/icons.svg#icon-download"/></svg>
+                <span>Export Active Ledger</span>
+              </button>
+            </div>
+            <div id="past-reports-archive-list" style="display: flex; flex-direction: column; gap: var(--space-2);">
+              <div class="engine-row">
+                <div class="engine-row-left">
+                  <svg class="icon" width="16" height="16" style="color: var(--teal);"><use href="/static/icons.svg#icon-file-text"/></svg>
+                  <div>
+                    <strong style="font-size: 0.84rem;">Weekly Enterprise Threat Audit (Active)</strong>
+                    <div style="font-size: 0.74rem; color: var(--text-dim);">Live snapshot • Auto-synchronized with monitored incidents</div>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <button class="soc-btn soc-btn-sm soc-btn-secondary" onclick="editScanReportTitle()">Rename</button>
+                  <button class="soc-btn soc-btn-sm soc-btn-primary" onclick="exportScanReportsCsv()">Export CSV</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. WORKFLOWS SUBTAB CONTAINER -->
+        <div id="reports-subtab-workflows" class="reports-subtab-pane" style="display: none;">
+          <div class="soc-widget" style="padding: var(--space-4);">
+            <div class="widget-header" style="margin-bottom: var(--space-3);">
+              <div class="widget-title-group">
+                <svg class="icon" width="16" height="16" style="color: var(--teal);"><use href="/static/icons.svg#icon-activity"/></svg>
+                <h3 class="widget-title">Incident Automation Rules</h3>
+              </div>
+              <button class="soc-btn soc-btn-sm soc-btn-primary" onclick="navigateToPage('workflows')">
+                <svg class="icon" width="13" height="13"><use href="/static/icons.svg#icon-plus"/></svg>
+                <span>Open Full Workflow Builder</span>
+              </button>
+            </div>
+            <div id="subtab-workflows-quick-list" style="display: flex; flex-direction: column; gap: var(--space-2);">
+              <div class="empty-state">Loading automation workflows...</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 4: UPLOAD & BATCH INSPECTION -->
+      <section class="page" id="page-upload-review">
+        <div class="page-header">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+              <span style="font-family: var(--font-mono); font-size: 0.76rem; color: var(--teal);">PRE-ACCEPTANCE /</span>
+              <h2 style="font-size: 1.35rem; font-weight: 700;">Pre-Acceptance Batch &amp; File Inspection</h2>
+            </div>
+            <p class="subtitle">Upload and scan up to 100 files concurrently BEFORE accepting into the monitored environment</p>
+          </div>
+          <div class="header-actions">
+            <button class="soc-btn soc-btn-sm soc-btn-secondary" onclick="exportBatchCsv()" id="btn-export-batch" style="display:none;" title="Export batch inspection results to CSV">
+              <svg class="icon" width="13" height="13"><use href="/static/icons.svg#icon-download"/></svg>
+              <span>Export Batch CSV</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="upload-review-container">
+          <div class="soc-widget soc-dropzone" id="dropzone-area">
+            <input type="file" id="file-upload-input" multiple style="display:none;" onchange="handleFileSelect(event)">
+            <input type="file" id="folder-upload-input" webkitdirectory directory multiple style="display:none;" onchange="handleFileSelect(event)">
+            
+            <div class="soc-dropzone-icon">
+              <svg class="icon" width="28" height="28"><use href="/static/icons.svg#icon-upload"/></svg>
+            </div>
+            <h3 style="font-size: 1.15rem; font-weight: 700; margin: 0;">Drag and drop files or folders to inspect</h3>
+            <p style="font-size: 0.82rem; color: var(--text-muted); max-width: 540px; margin: 0;">
+              Supports <code>.txt, .csv, .json, .jsonl, .log, .md, .pdf, .docx</code> with chunked streaming, entropy calculation, and multi-file batch engine (up to 100 files).
+            </p>
+            <div style="margin-top: var(--space-3); display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap;">
+              <button class="soc-btn soc-btn-primary" onclick="document.getElementById('file-upload-input').click()">
+                <svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-upload"/></svg>
+                <span>Browse Files</span>
+              </button>
+              <button class="soc-btn soc-btn-secondary" onclick="document.getElementById('folder-upload-input').click()">
+                <svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-folder"/></svg>
+                <span>Browse Folder</span>
+              </button>
+              <button class="soc-btn soc-btn-secondary" onclick="pasteFromClipboard()">
+                <svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-copy"/></svg>
+                <span>Paste from Clipboard</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Batch Inspection Progress & Metrics -->
+          <div id="batch-progress-card" class="soc-widget hidden" style="padding: var(--space-5);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3);">
+              <div>
+                <h3 id="batch-title" style="font-size: 1.05rem; font-weight: 700; color: var(--text-main);">Batch Inspection in Progress</h3>
+                <span id="batch-subtitle" style="font-size: 0.8rem; color: var(--text-muted);">Allocating bounded workers...</span>
+              </div>
+              <span id="batch-status-badge" class="badge badge-normal">Processing</span>
+            </div>
+
+            <div class="progress-bar-wrap" style="margin-bottom: var(--space-4);">
+              <div id="batch-progress-bar" class="progress-bar-fill animated" style="width: 0%;"></div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: var(--space-3); text-align: center;">
+              <div class="kpi-tile" style="padding: var(--space-3);">
+                <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Total Files</div>
+                <div id="batch-count-total" style="font-size: 1.3rem; font-weight: 800; font-family: var(--font-mono);">0</div>
+              </div>
+              <div class="kpi-tile" style="padding: var(--space-3); border-color: rgba(16, 185, 129, 0.3);">
+                <div style="font-size: 0.72rem; color: var(--accent-green); text-transform: uppercase;">Clean / Allowed</div>
+                <div id="batch-count-clean" style="font-size: 1.3rem; font-weight: 800; font-family: var(--font-mono); color: var(--accent-green);">0</div>
+              </div>
+              <div class="kpi-tile" style="padding: var(--space-3); border-color: rgba(244, 63, 94, 0.3);">
+                <div style="font-size: 0.72rem; color: var(--critical); text-transform: uppercase;">Flagged / Blocked</div>
+                <div id="batch-count-flagged" style="font-size: 1.3rem; font-weight: 800; font-family: var(--font-mono); color: var(--critical);">0</div>
+              </div>
+              <div class="kpi-tile" style="padding: var(--space-3); border-color: rgba(245, 158, 11, 0.3);">
+                <div style="font-size: 0.72rem; color: var(--medium); text-transform: uppercase;">Needs Review</div>
+                <div id="batch-count-incomplete" style="font-size: 1.3rem; font-weight: 800; font-family: var(--font-mono); color: var(--medium);">0</div>
+              </div>
+              <div class="kpi-tile" style="padding: var(--space-3);">
+                <div style="font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase;">Errors / Failed</div>
+                <div id="batch-count-failed" style="font-size: 1.3rem; font-weight: 800; font-family: var(--font-mono); color: var(--text-dim);">0</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Single/Batch Results Container -->
+          <div class="upload-result-container hidden" id="upload-result-card"></div>
+
+          <!-- Batch Table Container with Search, Filter & Pagination -->
+          <div id="batch-table-card" class="soc-widget hidden" style="padding: 0; overflow: hidden;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding: var(--space-4); border-bottom: 1px solid var(--border);">
+              <h3 style="font-size: 0.95rem; font-weight: 700; margin: 0;">Batch Inspection Results</h3>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <input type="text" id="batch-search-input" placeholder="Search filenames..." oninput="filterBatchResults()" class="input-field" style="width: 180px; padding: 6px 10px; font-size: 0.8rem;">
+                <select id="batch-verdict-filter" onchange="filterBatchResults()" class="filter-select" style="padding: 6px 10px; font-size: 0.8rem;">
+                  <option value="all">All Verdicts</option>
+                  <option value="Blocked">Blocked</option>
+                  <option value="Needs Review">Needs Review</option>
+                  <option value="Allowed">Allowed</option>
+                  <option value="Scan Incomplete">Scan Incomplete</option>
+                  <option value="Failed">Failed</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="soc-table-container">
+              <table class="soc-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Scan ID</th>
+                    <th>File Name</th>
+                    <th>Size</th>
+                    <th>Verdict</th>
+                    <th>Risk Score</th>
+                    <th>Findings</th>
+                    <th>Reasons / Details</th>
+                  </tr>
+                </thead>
+                <tbody id="batch-table-body"></tbody>
+              </table>
+            </div>
+            <div id="batch-table-pagination" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-dim);"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 5: QUARANTINE -->
+      <section class="page" id="page-quarantine">
+        <div class="page-header">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+              <span style="font-family: var(--font-mono); font-size: 0.76rem; color: var(--teal);">ISOLATION VAULT /</span>
+              <h2 style="font-size: 1.35rem; font-weight: 700;">Isolated Quarantine Vault</h2>
+            </div>
+            <p class="subtitle">High-risk sensitive files quarantined in isolated vault (<code>data/quarantine</code>) with SHA-256 tamper-evident integrity tracking</p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button class="soc-btn soc-btn-sm soc-btn-secondary" onclick="loadQuarantine()" title="Refresh Quarantine Vault">
+              <svg class="icon" width="13" height="13"><use href="/static/icons.svg#icon-refresh"/></svg>
+              <span>Refresh Vault</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quarantine Vault Telemetry Strip -->
+        <div class="vault-kpi-strip">
+          <div class="vault-kpi-card">
+            <span style="font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em;">Isolated Files</span>
+            <div style="display: flex; align-items: baseline; gap: 4px;">
+              <span style="font-family: var(--font-mono); font-size: 1.6rem; font-weight: 800; color: var(--critical);" id="vault-stat-count">0</span>
+              <span style="font-size: 0.75rem; color: var(--text-dim);">artifacts</span>
+            </div>
+          </div>
+          <div class="vault-kpi-card">
+            <span style="font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em;">Vault Disk Space</span>
+            <div style="display: flex; align-items: baseline; gap: 4px;">
+              <span style="font-family: var(--font-mono); font-size: 1.6rem; font-weight: 800; color: var(--text-main);" id="vault-stat-size">0.0 KB</span>
+              <span style="font-size: 0.75rem; color: var(--text-dim);">quarantined</span>
+            </div>
+          </div>
+          <div class="vault-kpi-card">
+            <span style="font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em;">Integrity Status</span>
+            <div style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
+              <span class="badge-dot" style="background: #10b981;"></span>
+              <span style="font-size: 0.85rem; font-weight: 700; color: #10b981;">SHA-256 Validated</span>
+            </div>
+          </div>
+          <div class="vault-kpi-card">
+            <span style="font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em;">Policy Trigger</span>
+            <div style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
+              <span class="badge badge-critical" style="font-size: 0.72rem;">Score &gt;= 70%</span>
+              <span style="font-size: 0.74rem; color: var(--text-dim);">Auto-Quarantined</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="soc-widget" style="padding: 0; overflow: hidden;">
+          <div class="soc-table-container">
+            <table class="soc-table">
+              <thead>
+                <tr>
+                  <th>Quarantined File</th>
+                  <th>SHA-256 Integrity Hash</th>
+                  <th>File Size</th>
+                  <th>Quarantine Date</th>
+                  <th>Safe Operations</th>
+                </tr>
+              </thead>
+              <tbody id="quarantine-table-body">
+                <tr><td colspan="5" class="empty-state">No files currently quarantined.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 6: AUDIT TRAIL -->
+      <section class="page" id="page-audit-trail">
+        <div class="page-header">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+              <span style="font-family: var(--font-mono); font-size: 0.76rem; color: var(--teal);">GOVERNANCE /</span>
+              <h2 style="font-size: 1.35rem; font-weight: 700;">System Audit Log &amp; Immutable Ledger</h2>
+            </div>
+            <p class="subtitle">Chronological forensic ledger of all scans, policy enforcement, quarantine, and operator actions</p>
+          </div>
+          <a href="/api/audit/export" class="soc-btn soc-btn-sm soc-btn-secondary" target="_blank" title="Export full audit ledger to CSV">
+            <svg class="icon" width="13" height="13"><use href="/static/icons.svg#icon-download"/></svg>
+            <span>Export Audit CSV</span>
+          </a>
+        </div>
+
+        <div class="soc-widget" style="padding: var(--space-4); margin-bottom: var(--space-4);">
+          <div class="filter-controls" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+            <input type="text" id="audit-action-filter" placeholder="Filter by action (e.g. quarantine, blocked, scan)..." class="input-field" style="flex: 2; min-width: 200px;">
+            <input type="text" id="audit-actor-filter" placeholder="Filter by performer (e.g. system, operator)..." class="input-field" style="flex: 1; min-width: 140px;">
+            <button class="soc-btn soc-btn-sm soc-btn-primary" onclick="loadAuditTrail()">
+              <svg class="icon" width="13" height="13"><use href="/static/icons.svg#icon-search"/></svg>
+              <span>Filter Audit</span>
+            </button>
+            <button class="soc-btn soc-btn-sm soc-btn-secondary" onclick="clearAuditFilters()">
+              <svg class="icon" width="13" height="13"><use href="/static/icons.svg#icon-refresh"/></svg>
+              <span>Reset</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="soc-widget" style="padding: 0; overflow: hidden;">
+          <div class="soc-table-container">
+            <table class="soc-table">
+              <thead>
+                <tr>
+                  <th style="width: 70px;">ID</th>
+                  <th style="width: 170px;">Timestamp</th>
+                  <th style="width: 140px;">Action</th>
+                  <th>Target Path</th>
+                  <th>Forensic Details</th>
+                  <th style="width: 110px;">Performer</th>
+                </tr>
+              </thead>
+              <tbody id="audit-table-body">
+                <tr><td colspan="6" class="empty-state">No audit trail records yet.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div id="audit-pagination-bar" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-top: 1px solid var(--border); font-size: 0.85rem; color: var(--text-dim);"></div>
+        </div>
+      </section>
+
+      <!-- PAGE: PROMPT VERIFICATION -->
+      <section class="page" id="page-prompt-verification">
+        <div class="page-header">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+              <span style="font-family: var(--font-mono); font-size: 0.76rem; color: var(--teal);">SCREENER /</span>
+              <h2 style="font-size: 1.35rem; font-weight: 700;">Prompt Security &amp; LLM Sanitization</h2>
+            </div>
+            <p class="subtitle">Screen and sanitize LLM prompts offline before transmission to external AI models</p>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="soc-btn soc-btn-sm soc-btn-secondary" onclick="loadSamplePrompt('safe')">Sample: Safe</button>
+            <button class="soc-btn soc-btn-sm soc-btn-secondary" onclick="loadSamplePrompt('pii')">Sample: PII Leak</button>
+            <button class="soc-btn soc-btn-sm soc-btn-secondary" onclick="loadSamplePrompt('injection')">Sample: Injection</button>
+          </div>
+        </div>
+
+        <!-- Prompt Verification Sub-tabs -->
+        <div style="display: flex; gap: 8px; margin-bottom: var(--space-4); border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+          <button id="tab-btn-prompt-sensitive" class="soc-btn soc-btn-sm soc-btn-primary" onclick="switchPromptTab('sensitive')">
+            <svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-shield"/></svg>
+            <span>Sensitive Data Screener</span>
+          </button>
+          <button id="tab-btn-prompt-anomaly" class="soc-btn soc-btn-sm soc-btn-secondary" onclick="switchPromptTab('anomaly')">
+            <svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-alert-triangle"/></svg>
+            <span>Anomaly &amp; Injection Detector</span>
+          </button>
+          <button id="tab-btn-prompt-playground" class="soc-btn soc-btn-sm soc-btn-secondary" onclick="switchPromptTab('playground')">
+            <svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-file-text"/></svg>
+            <span>Sanitization Playground</span>
+          </button>
+        </div>
+
+        <!-- TAB 1: SENSITIVE DATA SCREENER -->
+        <div id="prompt-tab-sensitive" style="display: grid; grid-template-columns: 1fr 340px; gap: var(--space-4); align-items: start;">
+          <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+            <div class="soc-widget" style="padding: var(--space-4);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <label style="font-weight: 700; font-size: 0.88rem; color: var(--text-main);">Prompt Input (Live Inspection)</label>
+                <span id="prompt-char-count" style="font-size: 0.75rem; color: var(--text-dim); font-family: var(--font-mono);">0 chars</span>
+              </div>
+              <textarea id="prompt-input-textarea" class="input-field" rows="7" placeholder="Type or paste prompt text here (e.g. customer data, credentials, queries)..." style="width: 100%; font-family: var(--font-mono); font-size: 0.86rem; line-height: 1.5; resize: vertical;" oninput="onPromptInputChanged()" onpaste="setTimeout(onPromptInputChanged, 50)"></textarea>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                <div style="display: flex; gap: 8px;">
+                  <button type="button" class="soc-btn soc-btn-sm soc-btn-primary" onclick="triggerPromptVerification(false)">Verify Prompt Now</button>
+                  <button type="button" class="soc-btn soc-btn-sm soc-btn-secondary" onclick="clearPromptVerification()">Clear</button>
+                </div>
+                <span id="prompt-verify-status" style="font-size: 0.78rem; color: var(--text-dim);">Ready</span>
+              </div>
+            </div>
+
+            <!-- Sanitized Prompt View -->
+            <div class="soc-widget" style="padding: var(--space-4);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <label style="font-weight: 700; font-size: 0.88rem; color: var(--accent-green);">Sanitized Prompt (Safe to Transmit)</label>
+                <div style="display: flex; gap: 6px; align-items: center;">
+                  <button id="btn-copy-sanitized" class="soc-btn soc-btn-sm soc-btn-secondary" onclick="copySanitizedPrompt()">
+                    <svg class="icon" width="13" height="13"><use href="/static/icons.svg#icon-copy"/></svg>
+                    <span id="copy-sanitized-text">Copy Sanitized</span>
+                  </button>
+                  <button class="soc-btn soc-btn-sm soc-btn-secondary" onclick="downloadPromptReport('json')">JSON</button>
+                  <button class="soc-btn soc-btn-sm soc-btn-secondary" onclick="downloadPromptReport('csv')">CSV</button>
+                </div>
+              </div>
+              <div id="sanitized-prompt-display" style="background: rgba(0,0,0,0.35); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-3); font-family: var(--font-mono); font-size: 0.84rem; min-height: 100px; white-space: pre-wrap; word-break: break-word; color: var(--text-main);">Type a prompt above to generate sanitized output...</div>
+            </div>
+          </div>
+
+          <!-- Right Column: Verdict Gauge & Findings Card -->
+          <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+            <div class="soc-widget" style="padding: var(--space-4); text-align: center;">
+              <h4 style="font-size: 0.82rem; text-transform: uppercase; color: var(--text-dim); margin-bottom: var(--space-3);">Verdict &amp; Sensitivity Gauge</h4>
+              <div style="margin: 0 auto 12px; width: 130px; height: 130px; position: relative; display: flex; align-items: center; justify-content: center;">
+                <svg width="130" height="130" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10" />
+                  <circle id="prompt-gauge-circle" cx="50" cy="50" r="40" fill="none" stroke="var(--accent-green)" stroke-width="10" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round" style="transition: stroke-dashoffset 0.4s ease, stroke 0.4s ease;" transform="rotate(-90 50 50)" />
+                </svg>
+                <div style="position: absolute; text-align: center;">
+                  <span id="prompt-gauge-score" style="font-size: 1.6rem; font-weight: 800; color: var(--text-main); font-family: var(--font-mono);">0</span>
+                  <span style="font-size: 0.72rem; color: var(--text-dim); display: block;">/ 100</span>
+                </div>
+              </div>
+              <span id="prompt-verdict-badge" class="badge badge-normal" style="font-size: 0.85rem; padding: 4px 14px;">SAFE</span>
+              <p id="prompt-verdict-desc" style="font-size: 0.78rem; color: var(--text-dim); margin-top: 8px;">No confidential patterns or sensitive PII detected.</p>
+            </div>
+
+            <!-- Findings Card -->
+            <div class="soc-widget" style="padding: var(--space-4);">
+              <h4 style="font-size: 0.82rem; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px;">Detected Sensitive Findings</h4>
+              <div id="prompt-findings-list" style="display: flex; flex-direction: column; gap: 6px; max-height: 240px; overflow-y: auto;">
+                <div style="color: var(--text-dim); font-size: 0.8rem; text-align: center; padding: 1.5rem 0;">No sensitive findings detected yet.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: PROMPT ANOMALY & INJECTION DETECTOR -->
+        <div id="prompt-tab-anomaly" style="display: none; grid-template-columns: 1fr 340px; gap: var(--space-4); align-items: start;">
+          <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+            <div class="soc-widget" style="padding: var(--space-4);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <label style="font-weight: 700; font-size: 0.88rem; color: var(--text-main);">Prompt Text for Anomaly Analysis</label>
+                <span id="anomaly-prompt-char-count" style="font-size: 0.75rem; color: var(--text-dim); font-family: var(--font-mono);">0 chars</span>
+              </div>
+              <textarea id="anomaly-prompt-input" class="input-field" rows="6" placeholder="Paste prompt here to check for jailbreaks, data exfiltration verbs, invisible Unicode, and evasion..." style="width: 100%; font-family: var(--font-mono); font-size: 0.86rem; line-height: 1.5; resize: vertical;"></textarea>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                <button class="soc-btn soc-btn-sm soc-btn-primary" onclick="runPromptAnomalyInspection()">Inspect Prompt Anomaly</button>
+                <span id="anomaly-status-label" style="font-size: 0.78rem; color: var(--text-dim);">Ready</span>
+              </div>
+            </div>
+
+            <!-- Signal Breakdown Bars Card -->
+            <div class="soc-widget" style="padding: var(--space-4);">
+              <h4 style="font-size: 0.9rem; font-weight: 700; margin-bottom: var(--space-3); color: var(--text-main);">Signal Contribution Breakdown ("Why Flagged")</h4>
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 3px;">
+                    <span>Prompt Injection &amp; Jailbreak Heuristics</span>
+                    <strong id="sig-val-injection" style="font-family: var(--font-mono);">0%</strong>
+                  </div>
+                  <div class="progress-bar-wrap" style="height: 6px;">
+                    <div id="sig-bar-injection" class="progress-bar-fill" style="width: 0%; background: var(--critical);"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 3px;">
+                    <span>Data Exfiltration Intent Signals</span>
+                    <strong id="sig-val-exfiltration" style="font-family: var(--font-mono);">0%</strong>
+                  </div>
+                  <div class="progress-bar-wrap" style="height: 6px;">
+                    <div id="sig-bar-exfiltration" class="progress-bar-fill" style="width: 0%; background: var(--medium);"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 3px;">
+                    <span>Obfuscation &amp; Evasion (Entropy, Homoglyphs)</span>
+                    <strong id="sig-val-obfuscation" style="font-family: var(--font-mono);">0%</strong>
+                  </div>
+                  <div class="progress-bar-wrap" style="height: 6px;">
+                    <div id="sig-bar-obfuscation" class="progress-bar-fill" style="width: 0%; background: var(--violet);"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 3px;">
+                    <span>Structural Anomalies (Token Flooding)</span>
+                    <strong id="sig-val-structural" style="font-family: var(--font-mono);">0%</strong>
+                  </div>
+                  <div class="progress-bar-wrap" style="height: 6px;">
+                    <div id="sig-bar-structural" class="progress-bar-fill" style="width: 0%; background: var(--cyan);"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 3px;">
+                    <span>Secret Material / Credential Patterns</span>
+                    <strong id="sig-val-secrets" style="font-family: var(--font-mono);">0%</strong>
+                  </div>
+                  <div class="progress-bar-wrap" style="height: 6px;">
+                    <div id="sig-bar-secrets" class="progress-bar-fill" style="width: 0%; background: #f43f5e;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Anomaly Gauge & Reasons -->
+          <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+            <div class="soc-widget" style="padding: var(--space-4); text-align: center;">
+              <h4 style="font-size: 0.82rem; text-transform: uppercase; color: var(--text-dim); margin-bottom: var(--space-3);">Anomaly Risk Gauge</h4>
+              <div style="margin: 0 auto 12px; width: 130px; height: 130px; position: relative; display: flex; align-items: center; justify-content: center;">
+                <svg width="130" height="130" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10" />
+                  <circle id="anomaly-gauge-circle" cx="50" cy="50" r="40" fill="none" stroke="var(--accent-green)" stroke-width="10" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round" style="transition: stroke-dashoffset 0.4s ease, stroke 0.4s ease;" transform="rotate(-90 50 50)" />
+                </svg>
+                <div style="position: absolute; text-align: center;">
+                  <span id="anomaly-gauge-score" style="font-size: 1.6rem; font-weight: 800; color: var(--text-main); font-family: var(--font-mono);">0</span>
+                  <span style="font-size: 0.72rem; color: var(--text-dim); display: block;">/ 100</span>
+                </div>
+              </div>
+              <span id="anomaly-level-badge" class="badge badge-normal" style="font-size: 0.85rem; padding: 4px 14px;">NORMAL</span>
+              <p id="anomaly-action-text" style="font-size: 0.78rem; color: var(--accent-green); margin-top: 8px; font-weight: 600;">Action: Allow Prompt</p>
+            </div>
+
+            <div class="soc-widget" style="padding: var(--space-4);">
+              <h4 style="font-size: 0.82rem; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px;">Anomaly Explanations</h4>
+              <ul id="anomaly-reasons-list" style="padding-left: 1.2rem; font-size: 0.8rem; color: var(--text-sub); display: flex; flex-direction: column; gap: 4px; margin: 0;">
+                <li>No anomalous patterns detected.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: SANITIZATION PLAYGROUND -->
+        <div id="prompt-tab-playground" style="display: none; grid-template-columns: 1fr 1fr; gap: var(--space-4); align-items: start;">
+          <div class="soc-widget" style="padding: var(--space-4);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <label style="font-weight: 700; font-size: 0.88rem; color: var(--text-main);">Raw Prompt (Unsanitized)</label>
+              <div style="display: flex; gap: 6px; align-items: center;">
+                <span style="font-size: 0.75rem; color: var(--text-dim);">Mask style:</span>
+                <select id="playground-mask-mode" onchange="runPlaygroundSanitize()" class="filter-select" style="padding: 2px 6px; font-size: 0.76rem;">
+                  <option value="entity">[TYPE: REDACTED]</option>
+                  <option value="confidential">[CONFIDENTIAL]</option>
+                  <option value="asterisk">***** (Asterisks)</option>
+                  <option value="synthetic">Synthetic Fake</option>
+                </select>
+              </div>
+            </div>
+            <textarea id="playground-raw-input" class="input-field" rows="10" placeholder="Paste test prompt containing PAN, Aadhaar, API keys, or credit cards..." style="width: 100%; font-family: var(--font-mono); font-size: 0.86rem; line-height: 1.5; resize: vertical;" oninput="runPlaygroundSanitize()"></textarea>
+          </div>
+
+          <div class="soc-widget" style="padding: var(--space-4);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <label style="font-weight: 700; font-size: 0.88rem; color: var(--accent-green);">Playground Redacted Output</label>
+              <button class="soc-btn soc-btn-sm soc-btn-secondary" onclick="copyPlaygroundOutput()">
+                <svg class="icon" width="13" height="13"><use href="/static/icons.svg#icon-copy"/></svg>
+                <span>Copy Output</span>
+              </button>
+            </div>
+            <div id="playground-output-display" style="background: rgba(0,0,0,0.35); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-3); font-family: var(--font-mono); font-size: 0.86rem; min-height: 240px; white-space: pre-wrap; word-break: break-word; color: var(--text-main);">Type raw text on the left to test live redaction...</div>
+          </div>
+        </div>
+
+        <!-- History Table -->
+        <div class="soc-widget" style="margin-top: var(--space-4); padding: 0; overflow: hidden;">
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-4); border-bottom: 1px solid var(--border);">
+            <h3 style="font-size: 0.95rem; font-weight: 700; margin: 0;">Past Prompt Checks History</h3>
+            <button class="soc-btn soc-btn-sm soc-btn-secondary" onclick="loadPromptHistory()">
+              <svg class="icon" width="13" height="13"><use href="/static/icons.svg#icon-refresh"/></svg>
+              <span>Refresh History</span>
+            </button>
+          </div>
+          <div class="soc-table-container">
+            <table class="soc-table">
+              <thead>
+                <tr>
+                  <th style="width: 70px;">ID</th>
+                  <th style="width: 100px;">Verdict</th>
+                  <th style="width: 110px;">Risk Score</th>
+                  <th>Prompt Hash (SHA-256)</th>
+                  <th>Findings</th>
+                  <th>Summary / Reasons</th>
+                  <th style="width: 160px;">Checked At</th>
+                </tr>
+              </thead>
+              <tbody id="prompt-history-table-body">
+                <tr><td colspan="7" class="empty-state">No previous prompt checks recorded yet.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 7: SETTINGS & POLICY -->
+      <section class="page" id="page-settings">
+        <div class="page-header">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+              <span style="font-family: var(--font-mono); font-size: 0.76rem; color: var(--teal);">POLICY &amp; ENGINE /</span>
+              <h2 style="font-size: 1.35rem; font-weight: 700;">Policy &amp; ML Model Settings</h2>
+            </div>
+            <p class="subtitle">Tune detection sensitivity, quarantine cutoffs, and IsolationForest model parameters</p>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: var(--space-4);">
+          <!-- Policy Thresholds Card -->
+          <div class="soc-widget" style="padding: var(--space-5);">
+            <div class="widget-header" style="margin-bottom: var(--space-3);">
+              <div class="widget-title-group">
+                <svg class="icon" width="16" height="16" style="color: var(--teal);"><use href="/static/icons.svg#icon-settings"/></svg>
+                <h3 class="widget-title">Risk Policy Thresholds</h3>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: var(--space-4);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label style="font-size: 0.82rem; font-weight: 600;">Suspicious Flag Threshold</label>
+                <span class="badge badge-warning" id="suspicious-thresh-val" style="font-family: var(--font-mono); font-size: 0.78rem;">30%</span>
+              </div>
+              <input type="range" id="suspicious-range" min="10" max="60" value="30" oninput="updateSettingLabels()" style="width: 100%; accent-color: var(--medium);">
+            </div>
+
+            <div class="form-group" style="margin-bottom: var(--space-4);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label style="font-size: 0.82rem; font-weight: 600;">Auto-Quarantine Cutoff</label>
+                <span class="badge badge-critical" id="quarantine-thresh-val" style="font-family: var(--font-mono); font-size: 0.78rem;">70%</span>
+              </div>
+              <input type="range" id="quarantine-range" min="50" max="95" value="70" oninput="updateSettingLabels()" style="width: 100%; accent-color: var(--critical);">
+            </div>
+
+            <div class="form-group checkbox-group" style="display: flex; align-items: center; gap: 8px; margin-bottom: var(--space-3);">
+              <input type="checkbox" id="auto-quarantine-toggle" checked style="accent-color: var(--teal); width: 16px; height: 16px;">
+              <label for="auto-quarantine-toggle" style="font-size: 0.82rem; cursor: pointer;">Enable Automatic File Isolation to <code>data/quarantine</code></label>
+            </div>
+
+            <div class="form-group checkbox-group" style="margin-bottom: var(--space-4); padding: 10px; background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: var(--radius-md);">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" id="include-extra-signals-toggle" style="accent-color: var(--medium); width: 16px; height: 16px;">
+                <label for="include-extra-signals-toggle" style="color: var(--medium); font-weight: 700; font-size: 0.82rem; cursor: pointer;">Include Extra Signals in final score</label>
+              </div>
+              <small style="display: block; color: var(--text-dim); margin-top: 4px; font-size: 0.74rem;">Advisory signals (entropy, magic mismatch, burst rate) remain advisory by default. Turning this ON factors extra anomalies into the score.</small>
+            </div>
+
+            <button class="soc-btn soc-btn-primary" onclick="savePolicySettings()">Save Policy Changes</button>
+          </div>
+
+          <!-- IsolationForest ML Model Card -->
+          <div class="soc-widget" style="padding: var(--space-5);">
+            <div class="widget-header" style="margin-bottom: var(--space-3);">
+              <div class="widget-title-group">
+                <svg class="icon" width="16" height="16" style="color: var(--violet);"><use href="/static/icons.svg#icon-activity"/></svg>
+                <h3 class="widget-title">IsolationForest ML Model &amp; Health</h3>
+              </div>
+            </div>
+
+            <div class="info-row" style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 0.82rem;">
+              <span style="color: var(--text-dim);">Model Type:</span>
+              <span style="font-weight: 600;">IsolationForest (scikit-learn)</span>
+            </div>
+            <div class="info-row" style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 0.82rem;">
+              <span style="color: var(--text-dim);">Model Storage:</span>
+              <code>data/model.joblib</code>
+            </div>
+            <div class="info-row" style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 0.82rem;">
+              <span style="color: var(--text-dim);">Model Version / Drift:</span>
+              <span id="model-drift-val" style="color: var(--accent-green); font-weight: 600;">v1.2 (Minimal Drift: 0.04 KL)</span>
+            </div>
+            <div class="info-row" style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 0.82rem;">
+              <span style="color: var(--text-dim);">Engine Status:</span>
+              <span class="badge badge-normal" id="model-status-badge">Trained &amp; Active</span>
+            </div>
+
+            <p style="font-size: 0.78rem; color: var(--text-dim); margin: var(--space-3) 0;">
+              Retrain updates unsupervised anomaly trees against all files currently in <code>data/monitored</code>. Sentinel preserves rollback checkpoints.
+            </p>
+
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button class="soc-btn soc-btn-sm soc-btn-primary" onclick="triggerModelRetrain()">Retrain ML Model Now</button>
+              <button class="soc-btn soc-btn-sm soc-btn-secondary" onclick="rollbackModelToPrevious()">Rollback Version</button>
+            </div>
+          </div>
+
+          <!-- System Self-Test Card -->
+          <div class="soc-widget" style="grid-column: 1 / -1; padding: var(--space-5);">
+            <div class="widget-header" style="margin-bottom: var(--space-2);">
+              <div class="widget-title-group">
+                <svg class="icon" width="16" height="16" style="color: var(--teal);"><use href="/static/icons.svg#icon-shield"/></svg>
+                <h3 class="widget-title">System Self-Test Diagnostic</h3>
+              </div>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: var(--space-3);">
+              Executes an end-to-end verification pipeline: create test sensitive file &rarr; scan &rarr; auto-quarantine &rarr; vault restore &rarr; safe purge &rarr; audit trail verification.
+            </p>
+            <button class="soc-btn soc-btn-primary" id="btn-run-selftest" onclick="runSystemSelfTest()">
+              <svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-activity"/></svg>
+              <span>Run System Self-Test</span>
+            </button>
+            <div id="selftest-results-container" style="margin-top: 1rem; display: none;"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE: AI COMMAND CONSOLE (R1 REPLICA) -->
+      <section class="page" id="page-assistant">
+        <div class="page-header">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+              <span style="font-family: var(--font-mono); font-size: 0.76rem; color: var(--teal);">COPILOT /</span>
+              <h2 style="font-size: 1.35rem; font-weight: 700;">AI Command Console</h2>
+            </div>
+            <p class="subtitle">Autonomous security copilot, real-time telemetry stream, and local neural reasoning</p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="badge badge-low"><span class="badge-dot pulse"></span> Air-Gapped Local Neural</span>
+            <button class="soc-btn soc-btn-primary soc-btn-sm" onclick="toggleFloatingAssistant()">
+              <svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-bot"/></svg>
+              <span>Open Copilot Chat</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="ai-console-grid">
+          <!-- MAIN COLUMN: Orb, Terminal Stream, Interactive Copilot -->
+          <div class="ai-console-main-col">
+            <!-- 1. Neural Status & Responsive Orb Card -->
+            <div class="soc-widget neural-orb-card" id="neural-orb-card">
+              <div class="neural-orb-wrap">
+                <svg class="neural-orb-svg" viewBox="0 0 100 100">
+                  <defs>
+                    <linearGradient id="orb-grad-safe" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.8"/>
+                      <stop offset="100%" stop-color="#10b981" stop-opacity="0.9"/>
+                    </linearGradient>
+                    <radialGradient id="orb-core-glow" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stop-color="#38bdf8" stop-opacity="1"/>
+                      <stop offset="60%" stop-color="#06b6d4" stop-opacity="0.6"/>
+                      <stop offset="100%" stop-color="#10b981" stop-opacity="0"/>
+                    </radialGradient>
+                  </defs>
+                  <!-- Outer rotating ring -->
+                  <circle cx="50" cy="50" r="44" fill="none" stroke="var(--teal)" stroke-width="1.5" stroke-dasharray="8 6" class="orb-ring-outer" opacity="0.6"/>
+                  <!-- Inner pulsing ring -->
+                  <circle cx="50" cy="50" r="34" fill="none" stroke="var(--cyan)" stroke-width="2" stroke-dasharray="24 12" class="orb-ring-inner"/>
+                  <!-- Core glowing orb -->
+                  <circle cx="50" cy="50" r="24" fill="url(#orb-core-glow)" class="orb-core" id="orb-core-circle"/>
+                  <circle cx="50" cy="50" r="10" fill="#ffffff" opacity="0.85"/>
+                </svg>
+              </div>
+
+              <div class="neural-info">
+                <div class="neural-headline">
+                  <span id="neural-orb-status-text">Autonomous SOC Defense Active</span>
+                  <span class="badge badge-low" id="neural-orb-badge">Nominal</span>
+                </div>
+                <p style="font-size: 0.82rem; color: var(--text-muted); margin: 0;">
+                  Offline neural observer analyzing chunked filesystem buffers and prompt embeddings. Zero external telemetry or remote API calls.
+                </p>
+                <div class="neural-meta-strip">
+                  <div class="neural-meta-item">
+                    <svg class="icon" width="13" height="13" style="color:var(--teal);"><use href="/static/icons.svg#icon-shield"/></svg>
+                    <span>Engine: <strong>IsolationForest + Heuristics</strong></span>
+                  </div>
+                  <div class="neural-meta-item">
+                    <svg class="icon" width="13" height="13" style="color:var(--cyan);"><use href="/static/icons.svg#icon-check"/></svg>
+                    <span>Guardrails: <strong>8 Rules + Luhn Active</strong></span>
+                  </div>
+                  <div class="neural-meta-item">
+                    <svg class="icon" width="13" height="13" style="color:var(--violet);"><use href="/static/icons.svg#icon-lock"/></svg>
+                    <span>Airgap: <strong>100% Zero-Egress</strong></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. Real-Time Monospace Terminal Stream -->
+            <div class="soc-widget ai-terminal-card">
+              <div class="terminal-header-bar">
+                <div class="terminal-title-group">
+                  <div class="terminal-dots">
+                    <span class="terminal-dot terminal-dot-red"></span>
+                    <span class="terminal-dot terminal-dot-yellow"></span>
+                    <span class="terminal-dot terminal-dot-green"></span>
+                  </div>
+                  <span class="terminal-stream-title">sentinel://soc-neural-stream - Live Monospace Event Stream</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button class="soc-btn soc-btn-sm soc-btn-secondary" id="btn-pause-terminal" onclick="toggleTerminalPause()">
+                    <svg class="icon" width="12" height="12"><use href="/static/icons.svg#icon-clock"/></svg>
+                    <span id="terminal-pause-btn-text">Pause</span>
+                  </button>
+                  <button class="soc-btn soc-btn-sm soc-btn-secondary" onclick="clearAiTerminalFeed()">
+                    <svg class="icon" width="12" height="12"><use href="/static/icons.svg#icon-trash"/></svg>
+                    <span>Clear</span>
+                  </button>
+                </div>
+              </div>
+              <div class="terminal-feed-container" id="ai-terminal-feed">
+                <!-- Live lines populated by telemetry -->
+              </div>
+            </div>
+
+            <!-- 3. Offline AI Investigation & Copilot Card -->
+            <div class="soc-widget" style="padding: var(--space-5);">
+              <div class="widget-header" style="margin-bottom: var(--space-3); border-bottom: 1px solid var(--border); padding-bottom: var(--space-3);">
+                <div class="widget-title-group">
+                  <svg class="icon" width="18" height="18" style="color: var(--teal);"><use href="/static/icons.svg#icon-bot"/></svg>
+                  <h3 class="widget-title">Offline Security Investigation Copilot</h3>
+                  <span class="widget-badge">LOCAL LLM / RULE REASONER</span>
+                </div>
+              </div>
+
+              <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: var(--space-3);">
+                Direct operator interface into SQLite audit logs, detection rules, and IsolationForest anomaly trees. Zero data leaves your machine.
+              </p>
+
+              <!-- Prompt starter chips -->
+              <div class="starter-chips-strip">
+                <button type="button" class="starter-chip" onclick="executeStarterChip('Summarize the latest security incidents')">
+                  <svg class="icon" width="12" height="12"><use href="/static/icons.svg#icon-alert-triangle"/></svg>
+                  <span>Summarize Latest Incidents</span>
+                </button>
+                <button type="button" class="starter-chip" onclick="executeStarterChip('Which files have the highest recorded risk scores?')">
+                  <svg class="icon" width="12" height="12"><use href="/static/icons.svg#icon-shield"/></svg>
+                  <span>Top Risky Files</span>
+                </button>
+                <button type="button" class="starter-chip" onclick="executeStarterChip('What is the current monitoring status?')">
+                  <svg class="icon" width="12" height="12"><use href="/static/icons.svg#icon-activity"/></svg>
+                  <span>Monitoring Telemetry</span>
+                </button>
+                <button type="button" class="starter-chip" onclick="executeStarterChip('Show me the recent quarantine activity')">
+                  <svg class="icon" width="12" height="12"><use href="/static/icons.svg#icon-lock"/></svg>
+                  <span>Quarantine Audit</span>
+                </button>
+                <button type="button" class="starter-chip" onclick="executeStarterChip('Explain the difference between a detection and a confirmed data leak')">
+                  <svg class="icon" width="12" height="12"><use href="/static/icons.svg#icon-help-circle"/></svg>
+                  <span>Explain Detection vs Leak</span>
+                </button>
+              </div>
+
+              <!-- Query input -->
+              <div class="ai-query-box">
+                <input type="text" id="ai-console-query-input" class="ai-query-input" placeholder="Ask Copilot or paste text to analyze (e.g. 'Audit highest risk files', 'Score text: PAN ABCDE1234F')..." onkeydown="if(event.key==='Enter') submitAiConsoleQuery()">
+                <button class="soc-btn soc-btn-primary" id="ai-console-submit-btn" onclick="submitAiConsoleQuery()">
+                  <svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-send"/></svg>
+                  <span>Investigate</span>
+                </button>
+              </div>
+
+              <!-- Output Panel with Threat Attribution Matrix -->
+              <div class="ai-results-panel" id="ai-console-results-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3); border-bottom: 1px solid var(--border); padding-bottom: 6px;">
+                  <span style="font-weight: 700; font-size: 0.85rem; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
+                    <svg class="icon" width="14" height="14" style="color: var(--teal);"><use href="/static/icons.svg#icon-bot"/></svg>
+                    <span>Copilot Investigation Response</span>
+                  </span>
+                  <span class="badge badge-normal" id="ai-results-source-badge">System Guidance</span>
+                </div>
+                <div class="ai-results-content" id="ai-console-results-content"></div>
+
+                <!-- Threat Attribution Matrix -->
+                <div class="threat-attribution-matrix" id="threat-attribution-container">
+                  <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">
+                    Threat Attribution &amp; Multi-Factor Signals
+                  </div>
+                  <div class="attrib-row">
+                    <div class="attrib-header">
+                      <span>Heuristic Deterministic Rules (Regex &amp; Luhn)</span>
+                      <strong id="attrib-val-heuristic">75%</strong>
+                    </div>
+                    <div class="attrib-track"><div class="attrib-fill" id="attrib-fill-heuristic" style="width: 75%; background: var(--teal);"></div></div>
+                  </div>
+                  <div class="attrib-row">
+                    <div class="attrib-header">
+                      <span>IsolationForest Unsupervised Anomaly Score</span>
+                      <strong id="attrib-val-ml">68%</strong>
+                    </div>
+                    <div class="attrib-track"><div class="attrib-fill" id="attrib-fill-ml" style="width: 68%; background: var(--violet);"></div></div>
+                  </div>
+                  <div class="attrib-row">
+                    <div class="attrib-header">
+                      <span>Shannon Entropy &amp; Token Density Factor</span>
+                      <strong id="attrib-val-entropy">55%</strong>
+                    </div>
+                    <div class="attrib-track"><div class="attrib-fill" id="attrib-fill-entropy" style="width: 55%; background: var(--cyan);"></div></div>
+                  </div>
+                  <div class="attrib-row">
+                    <div class="attrib-header">
+                      <span>Policy Confidence &amp; Auto-Quarantine Cutoff</span>
+                      <strong id="attrib-val-policy">70% Threshold</strong>
+                    </div>
+                    <div class="attrib-track"><div class="attrib-fill" id="attrib-fill-policy" style="width: 70%; background: var(--critical);"></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SIDE COLUMN: KPI Tiles & Architecture Card -->
+          <div class="ai-console-side-col">
+            <!-- KPI Tile 1: Security Posture Score -->
+            <div class="soc-widget" style="padding: var(--space-4);">
+              <div class="widget-header" style="margin-bottom: var(--space-2);">
+                <div class="widget-title-group">
+                  <svg class="icon" width="15" height="15" style="color: var(--teal);"><use href="/static/icons.svg#icon-shield"/></svg>
+                  <h4 style="font-size: 0.88rem; font-weight: 700;">Posture Score</h4>
+                </div>
+                <span class="badge badge-low" id="ai-posture-badge">Operational</span>
+              </div>
+              <div style="display: flex; align-items: baseline; gap: 4px; margin: var(--space-2) 0;">
+                <span style="font-family: var(--font-mono); font-size: 2.2rem; font-weight: 800; color: var(--text-main);" id="ai-posture-score-val">100</span>
+                <span style="font-size: 0.85rem; color: var(--text-dim);">/ 100</span>
+              </div>
+              <div class="attrib-track" style="height: 8px;">
+                <div class="attrib-fill" id="ai-posture-fill" style="width: 100%; background: var(--teal);"></div>
+              </div>
+              <div style="font-size: 0.72rem; color: var(--text-dim); margin-top: 6px;">
+                Evaluated against active cases, resolution velocity &amp; SLA compliance.
+              </div>
+            </div>
+
+            <!-- KPI Tile 2: Threat Forecast EWMA -->
+            <div class="soc-widget" style="padding: var(--space-4);">
+              <div class="widget-header" style="margin-bottom: var(--space-2);">
+                <div class="widget-title-group">
+                  <svg class="icon" width="15" height="15" style="color: var(--cyan);"><use href="/static/icons.svg#icon-activity"/></svg>
+                  <h4 style="font-size: 0.88rem; font-weight: 700;">Threat Forecast EWMA</h4>
+                </div>
+                <span class="badge badge-info">Stable</span>
+              </div>
+              <div style="display: flex; align-items: baseline; gap: 8px; margin: var(--space-2) 0;">
+                <span style="font-family: var(--font-mono); font-size: 2.2rem; font-weight: 800; color: var(--teal);" id="ai-ewma-val">12.4%</span>
+                <span style="font-size: 0.78rem; color: var(--teal);">Baseline Nominal</span>
+              </div>
+              <div style="font-size: 0.72rem; color: var(--text-dim);">
+                Exponentially weighted moving average of evaluated file risk scores over 24h window.
+              </div>
+            </div>
+
+            <!-- KPI Tile 3: Guardrail Strictness -->
+            <div class="soc-widget" style="padding: var(--space-4);">
+              <div class="widget-header" style="margin-bottom: var(--space-2);">
+                <div class="widget-title-group">
+                  <svg class="icon" width="15" height="15" style="color: var(--medium);"><use href="/static/icons.svg#icon-settings"/></svg>
+                  <h4 style="font-size: 0.88rem; font-weight: 700;">Guardrails Policy</h4>
+                </div>
+                <span class="badge badge-high">Strict</span>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.76rem; margin-top: 8px;">
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--text-muted);">Quarantine Cutoff:</span>
+                  <strong style="color: var(--critical);">70% Risk</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--text-muted);">Suspicious Cutoff:</span>
+                  <strong style="color: var(--medium);">40% Risk</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--text-muted);">Auto-Isolation:</span>
+                  <strong style="color: var(--teal);">Enabled</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--text-muted);">SHA-256 Vault Verification:</span>
+                  <strong style="color: var(--teal);">Active</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Architecture Checklist Card -->
+            <div class="soc-widget" style="padding: var(--space-4);">
+              <div class="widget-header" style="margin-bottom: var(--space-3);">
+                <div class="widget-title-group">
+                  <svg class="icon" width="15" height="15" style="color: var(--teal);"><use href="/static/icons.svg#icon-check"/></svg>
+                  <h4 style="font-size: 0.88rem; font-weight: 700;">Secure by Design</h4>
+                </div>
+              </div>
+              <div class="arch-checklist">
+                <div class="arch-item">
+                  <svg class="icon arch-icon" width="14" height="14"><use href="/static/icons.svg#icon-check"/></svg>
+                  <div>
+                    <span class="arch-text-title">100% Offline Inference</span>
+                    <span class="arch-text-desc">Zero external CDNs, fonts, or cloud API calls.</span>
+                  </div>
+                </div>
+                <div class="arch-item">
+                  <svg class="icon arch-icon" width="14" height="14"><use href="/static/icons.svg#icon-check"/></svg>
+                  <div>
+                    <span class="arch-text-title">Encrypted/Isolated Vault</span>
+                    <span class="arch-text-desc">Quarantined files kept outside web root with SHA-256 integrity checks.</span>
+                  </div>
+                </div>
+                <div class="arch-item">
+                  <svg class="icon arch-icon" width="14" height="14"><use href="/static/icons.svg#icon-check"/></svg>
+                  <div>
+                    <span class="arch-text-title">Local SQLite Audit Trail</span>
+                    <span class="arch-text-desc">Indexed, immutable actions log for forensic auditability.</span>
+                  </div>
+                </div>
+                <div class="arch-item">
+                  <svg class="icon arch-icon" width="14" height="14"><use href="/static/icons.svg#icon-check"/></svg>
+                  <div>
+                    <span class="arch-text-title">Hybrid ML Fusion Formula</span>
+                    <span class="arch-text-desc">Combines rule deterministic weights with IsolationForest anomaly detection.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE: AUTOMATION WORKFLOWS (R4/R5) -->
+      <section class="page" id="page-workflows">
+        <div class="page-header">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+              <span style="font-family: var(--font-mono); font-size: 0.76rem; color: var(--teal);">AUTOMATION /</span>
+              <h2 style="font-size: 1.35rem; font-weight: 700;">Automation Workflow Rules</h2>
+            </div>
+            <p class="subtitle">Rule-based incident routing, auto-quarantine, assignees, and alert policies executed post-scoring</p>
+          </div>
+          <div class="header-actions">
+            <button class="soc-btn soc-btn-sm soc-btn-secondary" onclick="loadWorkflowsList()">
+              <svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-refresh"/></svg>
+              <span>Refresh Rules</span>
+            </button>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-4);">
+          <!-- Workflow Rule Builder Form -->
+          <div class="soc-widget" style="padding: var(--space-4);">
+            <div class="widget-header" style="margin-bottom: var(--space-3);">
+              <div class="widget-title-group">
+                <svg class="icon" width="16" height="16" style="color: var(--teal);"><use href="/static/icons.svg#icon-activity"/></svg>
+                <h3 class="widget-title">Create Workflow Rule</h3>
+                <span class="widget-badge" id="workflow-role-badge">ADMIN ONLY</span>
+              </div>
+            </div>
+            <form id="workflow-builder-form" onsubmit="event.preventDefault(); saveWorkflowRule();" style="display: flex; flex-direction: column; gap: var(--space-3);">
+              <div>
+                <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-sub); display: block; margin-bottom: 4px;">Rule Name</label>
+                <input type="text" id="workflow-rule-name" class="input-field" placeholder="e.g. Auto-Quarantine Critical Leaks" required style="width: 100%;">
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-2);">
+                <div>
+                  <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-sub); display: block; margin-bottom: 4px;">IF Condition</label>
+                  <select id="workflow-condition-field" class="select-field" style="width: 100%;">
+                    <option value="severity">Severity (Risk Level)</option>
+                    <option value="file_type">File Type / Extension</option>
+                    <option value="category">Category (PII / Secret)</option>
+                    <option value="source">Source (Watcher / Upload)</option>
+                    <option value="risk_score">Risk Score (%)</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-sub); display: block; margin-bottom: 4px;">Operator</label>
+                  <select id="workflow-condition-op" class="select-field" style="width: 100%;">
+                    <option value="eq">Equals (==)</option>
+                    <option value="contains">Contains</option>
+                    <option value="gte">Greater than or eq (&gt;=)</option>
+                    <option value="lte">Less than or eq (&lt;=)</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-sub); display: block; margin-bottom: 4px;">Condition Value</label>
+                  <input type="text" id="workflow-condition-val" class="input-field" placeholder="e.g. CRITICAL or csv" required style="width: 100%;">
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2);">
+                <div>
+                  <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-sub); display: block; margin-bottom: 4px;">THEN Action</label>
+                  <select id="workflow-action-type" class="select-field" style="width: 100%;">
+                    <option value="quarantine">Quarantine to Vault</option>
+                    <option value="dismiss">Dismiss (Mark Normal)</option>
+                    <option value="assign">Assign to Analyst / Team</option>
+                    <option value="notify">Notify Bell Alert</option>
+                    <option value="tag">Add Incident Tag</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-sub); display: block; margin-bottom: 4px;">Action Value (Optional)</label>
+                  <input type="text" id="workflow-action-val" class="input-field" placeholder="e.g. SOC Tier 2 or bell" style="width: 100%;">
+                </div>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--space-2);">
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 0.8rem; cursor: pointer;">
+                  <input type="checkbox" id="workflow-enabled-check" checked>
+                  <span>Enable rule immediately</span>
+                </label>
+                <div style="display: flex; gap: var(--space-2);">
+                  <button type="button" class="soc-btn soc-btn-sm soc-btn-secondary" onclick="dryRunCurrentFormRule()">
+                    <svg class="icon" width="13" height="13"><use href="/static/icons.svg#icon-refresh"/></svg>
+                    <span>Test Rule</span>
+                  </button>
+                  <button type="submit" class="soc-btn soc-btn-sm soc-btn-primary" id="btn-save-workflow">
+                    <svg class="icon" width="13" height="13"><use href="/static/icons.svg#icon-check"/></svg>
+                    <span>Save Rule</span>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Dry-Run Tester Results Box -->
+          <div class="soc-widget" style="padding: var(--space-4);">
+            <div class="widget-header" style="margin-bottom: var(--space-3);">
+              <div class="widget-title-group">
+                <svg class="icon" width="16" height="16" style="color: var(--cyan);"><use href="/static/icons.svg#icon-terminal"/></svg>
+                <h3 class="widget-title">Dry-Run Evaluation Preview</h3>
+              </div>
+              <span class="widget-badge" id="workflow-test-badge">No test executed</span>
+            </div>
+            <div id="workflow-test-results-container" style="max-height: 280px; overflow-y: auto; font-size: 0.8rem;">
+              <div class="empty-state" style="padding: 24px; text-align: center; color: var(--text-dim);">
+                Click "Test Rule" to dry-run against the latest 10 recorded incidents.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Workflow Rules Table -->
+        <div class="soc-widget" style="padding: var(--space-4);">
+          <div class="widget-header" style="margin-bottom: var(--space-3);">
+            <div class="widget-title-group">
+              <svg class="icon" width="16" height="16" style="color: var(--teal);"><use href="/static/icons.svg#icon-shield"/></svg>
+              <h3 class="widget-title">Configured Workflow Rules</h3>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 50px;">ID</th>
+                  <th>Rule Name</th>
+                  <th>Trigger Condition</th>
+                  <th>Action Triggered</th>
+                  <th style="width: 100px;">Status</th>
+                  <th style="width: 140px; text-align: right;">Operations</th>
+                </tr>
+              </thead>
+              <tbody id="workflows-table-body">
+                <tr><td colspan="6" class="empty-state">Loading workflow rules...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- FLOATING MOVABLE AI ASSISTANT LAUNCHER & PANEL (PHASE 6) -->
+    <div id="floating-assistant-launcher" style="position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet)); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 999; box-shadow: 0 8px 24px rgba(56, 189, 248, 0.4); user-select: none; touch-action: none; transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);" onclick="onAssistantLauncherClick(event)">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <path d="m9 12 2 2 4-4"/>
+      </svg>
+      <div id="assistant-unread-badge" style="position: absolute; top: -2px; right: -2px; width: 14px; height: 14px; border-radius: 50%; background: var(--accent-red); border: 2px solid var(--bg-surface); animation: pulse 1.8s infinite; pointer-events: none;"></div>
+    </div>
+
+    <!-- FLOATING ASSISTANT DOCKED CHAT PANEL -->
+    <div id="floating-assistant-panel" class="hidden" style="display: none; position: fixed; bottom: 90px; right: 24px; width: 440px; max-width: calc(100vw - 32px); height: 600px; max-height: calc(100vh - 120px); border-radius: 16px; background: rgba(13, 21, 37, 0.95); backdrop-filter: blur(16px); border: 1px solid var(--border-glow); box-shadow: 0 16px 48px rgba(0,0,0,0.6); flex-direction: column; z-index: 1000; overflow: hidden;">
+      <!-- Panel Header (Draggable) -->
+      <div id="floating-assistant-header" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: rgba(15, 25, 45, 0.9); border-bottom: 1px solid var(--border-color); cursor: move; user-select: none; flex-shrink: 0;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div style="width: 28px; height: 28px; border-radius: 6px; background: linear-gradient(135deg, rgba(56, 189, 248, 0.3), rgba(168, 85, 247, 0.3)); display: flex; align-items: center; justify-content: center; color: var(--accent-cyan);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div>
+            <strong style="font-size: 0.9rem; color: #ffffff; display: block;">Sentinel AI Copilot</strong>
+            <span style="font-size: 0.72rem; color: var(--accent-green); display: flex; align-items: center; gap: 4px;"><span class="badge-dot" style="background:#10b981;"></span> Offline &amp; Zero Leakage</span>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <button type="button" class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); toggleAssistantPanelExpand();" title="Expand / Minimize" style="padding: 4px 8px; font-size: 0.75rem; cursor: pointer;">
+            <svg class="icon" width="12" height="12"><use href="/static/icons.svg#icon-move"/></svg>
+          </button>
+          <button type="button" class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); resetChatHistory();" title="Reset chat" style="padding: 4px 8px; font-size: 0.75rem; cursor: pointer;">
+            <svg class="icon" width="12" height="12"><use href="/static/icons.svg#icon-refresh"/></svg>
+          </button>
+          <button type="button" id="btn-close-assistant" class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); closeFloatingAssistant();" title="Close Copilot" style="padding: 4px 10px; font-size: 0.95rem; font-weight: 700; line-height: 1; cursor: pointer; color: var(--text-muted);">&times;</button>
+        </div>
+      </div>
+
+      <!-- Messages List -->
+      <div class="assistant-messages" id="assistant-messages-container" style="flex: 1 1 auto; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 12px;">
+        <div class="chat-message assistant-msg" style="display: flex; gap: 10px; align-items: flex-start; max-width: 95%;">
+          <div class="msg-avatar" style="width: 28px; height: 28px; border-radius: 6px; background: rgba(56, 189, 248, 0.2); color: #38bdf8; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.78rem; font-weight: 700;">AI</div>
+          <div class="msg-bubble" style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 10px; padding: 12px 14px; color: var(--text-main); font-size: 0.85rem; line-height: 1.55;">
+            <p style="margin-bottom: 6px; font-weight: 700; color: #ffffff;">Sentinel Copilot is ready.</p>
+            <p style="margin-bottom: 10px; color: var(--text-muted); font-size: 0.8rem;">Local model, zero external leakage. Quick query chips:</p>
+            <div class="quick-prompts-container" style="display: flex; flex-wrap: wrap; gap: 6px;">
+              <button type="button" class="prompt-chip" style="font-size: 0.75rem; padding: 4px 8px;" onclick="sendQuickPrompt('What is the current monitoring status?')">Monitoring Status</button>
+              <button type="button" class="prompt-chip" style="font-size: 0.75rem; padding: 4px 8px;" onclick="sendQuickPrompt('Summarize the latest security incidents')">Latest Incidents</button>
+              <button type="button" class="prompt-chip" style="font-size: 0.75rem; padding: 4px 8px;" onclick="sendQuickPrompt('Which files have the highest recorded risk scores?')">High-Risk Files</button>
+              <button type="button" class="prompt-chip" style="font-size: 0.75rem; padding: 4px 8px;" onclick="sendQuickPrompt('Show me the recent quarantine activity')">Quarantine Vault</button>
+              <button type="button" class="prompt-chip" style="font-size: 0.75rem; padding: 4px 8px;" onclick="sendQuickPrompt('How many uploads were actually blocked?')">Blocked Uploads</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Assistant Offline Banner (R1) -->
+      <div id="assistant-offline-banner" style="display: none; padding: 6px 12px; background: rgba(239, 68, 68, 0.15); border-top: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; font-size: 0.75rem; text-align: center;">
+        Workspace or database unavailable. Select a workspace to use Sentinel.
+      </div>
+
+      <!-- Chat Input -->
+      <div style="padding: 10px 14px; border-top: 1px solid var(--border-color); background: rgba(10, 17, 30, 0.95); display: flex; gap: 8px; align-items: center; flex-shrink: 0;">
+        <input type="text" id="assistant-input" placeholder="Type query (e.g. 'why was file flagged', 'check prompt')..." style="flex: 1; background: rgba(22, 36, 60, 0.8); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; color: #ffffff; font-size: 0.85rem; outline: none;" onkeydown="handleAssistantKeyDown(event)">
+        <button class="btn btn-primary" id="assistant-send-btn" onclick="submitAssistantQuery()" style="display: flex; align-items: center; justify-content: center; padding: 10px 14px; border-radius: 8px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- INCIDENT DETAIL DRAWER (R4 SLIDE-IN) -->
+    <div class="drawer-backdrop" id="incident-drawer-overlay" onclick="closeDrawer()"></div>
+    <div class="soc-drawer" id="incident-drawer">
+      <div class="drawer-header">
+        <div class="drawer-title-group">
+          <span class="drawer-breadcrumb" id="drawer-breadcrumb">INCIDENTS / INC-0</span>
+          <h3 class="drawer-title" id="drawer-file-name">incident_details.txt</h3>
+          <span class="drawer-subtitle" id="drawer-file-path" style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-dim);">data/monitored/incident_details.txt</span>
+        </div>
+        <button class="drawer-close-btn" onclick="closeDrawer()" title="Close Drawer">&times;</button>
+      </div>
+      <div class="drawer-body" id="drawer-content-body">
+        <div class="spinner"></div>
+      </div>
+    </div>
+
+    <!-- TOAST NOTIFICATIONS -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- COMMAND PALETTE MODAL (Ctrl+K) -->
+    <div class="command-palette-backdrop" id="command-palette-backdrop" onclick="onCommandPaletteBackdropClick(event)">
+      <div class="command-palette" id="command-palette" role="dialog" aria-modal="true" aria-label="Command Palette">
+        <div class="command-palette-search">
+          <svg class="icon" width="18" height="18"><use href="/static/icons.svg#icon-search"/></svg>
+          <input type="text" id="command-palette-input" class="command-palette-input" placeholder="Type a command or search incidents..." autocomplete="off">
+          <span class="command-item-kbd">ESC</span>
+        </div>
+        <div class="command-palette-results" id="command-palette-results"></div>
+        <div class="command-palette-footer">
+          <span>Navigate with <kbd>Up</kbd> <kbd>Down</kbd></span>
+          <span>Execute with <kbd>Enter</kbd></span>
+          <span>Sentinel SOC Platform</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SESSION LOCK / SIGN OUT MODAL (R1) -->
+    <div class="session-lock-modal" id="session-lock-modal" style="display: none;">
+      <div class="lock-card">
+        <div style="width: 48px; height: 48px; border-radius: 50%; background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.3); display: flex; align-items: center; justify-content: center; margin: 0 auto; color: var(--critical);">
+          <svg class="icon" width="24" height="24"><use href="/static/icons.svg#icon-lock"/></svg>
+        </div>
+        <div>
+          <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 4px;">Session Locked</h3>
+          <p style="font-size: 0.8rem; color: var(--text-dim);">Enter your local passcode or click Unlock to resume SOC console access.</p>
+        </div>
+        <form id="session-lock-form" onsubmit="event.preventDefault(); unlockSession();" style="display: flex; flex-direction: column; gap: var(--space-3);">
+          <input type="password" id="session-passcode-input" class="input-field" placeholder="Passcode (default: sentinel)" autocomplete="current-password" style="text-align: center; font-size: 0.95rem; letter-spacing: 2px;">
+          <button type="submit" class="soc-btn soc-btn-primary" style="justify-content: center; width: 100%;">
+            <svg class="icon" width="14" height="14"><use href="/static/icons.svg#icon-lock"/></svg>
+            <span>Unlock Console</span>
+          </button>
+        </form>
+        <span style="font-size: 0.72rem; color: var(--text-dim);">Offline Local Access • SentinelDLP Enterprise</span>
+      </div>
+    </div>
+
+    <!-- BOTTOM STATUS BAR (R5) -->
+    <footer class="soc-bottom-status-bar" id="soc-bottom-status-bar">
+      <div class="soc-bottom-left">
+        <span style="font-weight: 700; color: var(--text-main);">SentinelDLP v2.4 Enterprise</span>
+        <span style="color: var(--border);">|</span>
+        <span id="bottom-active-role-text" style="color: var(--violet); font-weight: 600;">Role: SOC Analyst</span>
+      </div>
+      <div class="soc-bottom-center">
+        <span id="bottom-scoped-vault-text">Root: <strong>data/monitored</strong> [Scoped Safe]</span>
+      </div>
+      <div class="soc-bottom-right">
+        <span class="badge-dot" style="background:#10b981;"></span>
+        <span>Offline • Local only</span>
+        <span style="color: var(--border);">|</span>
+        <div class="watcher-monitor-pill running" id="bottom-watcher-pill" title="Watchdog Monitoring Service State">
+          <svg class="icon" width="12" height="12"><use href="/static/icons.svg#icon-activity"/></svg>
+          <span id="bottom-watcher-text">Watcher: Running</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="/static/app.js?v=4.4"></script>
+</body>
+</html>

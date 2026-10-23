@@ -1,0 +1,8 @@
+Metadata-Version: 2.4
+Name: local-data-leakage-monitor
+Version: 0.1.0
+Summary: A local, directory-scoped data leakage monitoring prototype
+Requires-Python: >=3.10
+Requires-Dist: watchdog<7.0,>=6.0
+Requires-Dist: scikit-learn<2.0,>=1.5
+Requires-Dist: streamlit<2.0,>=1.39

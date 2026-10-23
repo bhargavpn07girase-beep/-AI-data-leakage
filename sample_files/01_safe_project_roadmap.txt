@@ -1,0 +1,14 @@
+SentinelDLP Project Roadmap & Feature Specification
+
+1. System Architecture
+- Local file event monitoring powered by Watchdog filesystem observer.
+- Scans dedicated directory data/monitored for supported file formats (.txt, .csv, .json, .log, .md, .pdf, .docx).
+- Anomaly scoring using scikit-learn IsolationForest combined with heuristic rule weights.
+- SQLite database storage for audit logs, findings, and incident management.
+
+2. Quarter 4 Milestones
+- Upgrade UI/UX with modern glassmorphism design system.
+- Implement Server-Sent Events (SSE) for zero-polling real-time updates.
+- Verify 100% offline local operational execution.
+
+This document contains routine project planning details.

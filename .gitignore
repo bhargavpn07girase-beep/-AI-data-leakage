@@ -1,0 +1,39 @@
+# Python & Environments
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+venv/
+env/
+ENV/
+
+# Data & Runtime Storage
+data/*.db
+data/*.sqlite3
+data/*.joblib
+data/monitored/
+data/quarantine/
+data/approved/
+data/chrome_temp/
+data/logs/
+data/temp_upload/
+data/model_backups/
+*.db
+*.sqlite3
+*.joblib
+
+# Temporary test & scratch files
+test_tmp.txt
+scratch/
+
+# Environment Variables & Secrets
+.env
+*.env
+!.env.example
+
+# OS & IDE
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini

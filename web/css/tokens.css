@@ -1,0 +1,214 @@
+/* SentinelDLP SOC Design System Tokens (Phase 1)
+   Dark/Light Theme, Precision 8px Grid, Typography, Radius, Z-Index, and Severity Palettes
+*/
+
+:root,
+[data-theme="dark"] {
+  /* Dark Theme (Default SOC Mode) */
+  --bg-0: #04070D;          /* Canvas base near-black navy */
+  --bg-1: #0A1020;          /* Deep panel / sidebar navy */
+  --bg-2: #0F172A;          /* Elevated surface navy */
+  --bg-elevated: #151F38;   /* Popover / modal background */
+
+  /* High-Contrast SOC Surfaces */
+  --surface: #0e172a;
+  --surface-hover: #172442;
+  --surface-active: #1f3056;
+  --surface-solid: #0d1527;
+  --surface-raised: #151F38;
+  --sidebar-width: 260px;
+
+  /* Borders & Dividers */
+  --border: rgba(255, 255, 255, 0.12);
+  --border-hover: rgba(255, 255, 255, 0.22);
+  --border-focus: rgba(45, 212, 191, 0.6);
+
+  /* Primary Brand Colors & Radial Glows */
+  --teal: #2DD4BF;
+  --teal-glow: rgba(45, 212, 191, 0.25);
+  --cyan: #38BDF8;
+  --cyan-glow: rgba(56, 189, 248, 0.25);
+  --violet: #7C5CFF;
+  --violet-glow: rgba(124, 92, 255, 0.35);
+
+  /* Severity Palette (Consistent across badges, bars, charts) */
+  --critical: #EF4444;
+  --critical-bg: rgba(239, 68, 68, 0.18);
+  --critical-border: rgba(239, 68, 68, 0.4);
+
+  --high: #F97316;
+  --high-bg: rgba(249, 115, 22, 0.18);
+  --high-border: rgba(249, 115, 22, 0.4);
+
+  --medium: #F59E0B;
+  --medium-bg: rgba(245, 158, 11, 0.18);
+  --medium-border: rgba(245, 158, 11, 0.4);
+
+  --low: #22C55E;
+  --low-bg: rgba(34, 197, 94, 0.18);
+  --low-border: rgba(34, 197, 94, 0.4);
+
+  --info: #38BDF8;
+  --info-bg: rgba(56, 189, 248, 0.18);
+
+  /* Typography Colors */
+  --text-main: #F8FAFC;
+  --text-muted: #CBD5E1;
+  --text-dim: #94A3B8;
+  --text-inverse: #04070D;
+
+  /* Typography Font Stacks (100% Offline with Fallbacks) */
+  --font-heading: 'Space Grotesk', 'Sora', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --font-accent: 'Caveat', 'Segoe Script', cursive;
+
+  /* 8px Spacing Grid */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Corner Radius Scale */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-full: 9999px;
+
+  /* Shadows & Glow */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 4px 24px -2px rgba(0, 0, 0, 0.65);
+  --shadow-modal: 0 16px 48px -4px rgba(0, 0, 0, 0.85);
+  --glow-teal: 0 0 20px -3px rgba(45, 212, 191, 0.35);
+  --glow-violet: 0 0 24px -3px rgba(124, 92, 255, 0.4);
+  --glow-critical: 0 0 20px -3px rgba(239, 68, 68, 0.4);
+
+  /* Transitions */
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Z-Index Hierarchy */
+  --z-base: 1;
+  --z-sticky: 100;
+  --z-dropdown: 200;
+  --z-drawer: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+  --z-copilot: 600;
+  --z-command: 700;
+}
+
+/* Light Theme Overrides */
+[data-theme="light"] {
+  --bg-0: #F8FAFC;
+  --bg-1: #FFFFFF;
+  --bg-2: #F1F5F9;
+  --bg-elevated: #FFFFFF;
+
+  --surface: #FFFFFF;
+  --surface-hover: #F8FAFC;
+  --surface-active: #F1F5F9;
+  --surface-solid: #FFFFFF;
+  --surface-raised: #FFFFFF;
+  --sidebar-width: 260px;
+
+  --border: rgba(15, 23, 42, 0.12);
+  --border-hover: rgba(15, 23, 42, 0.2);
+  --border-focus: rgba(13, 148, 136, 0.6);
+
+  --teal: #0D9488;
+  --teal-glow: rgba(13, 148, 136, 0.2);
+  --cyan: #0284C7;
+  --cyan-glow: rgba(2, 132, 199, 0.2);
+  --violet: #6D28D9;
+  --violet-glow: rgba(109, 40, 217, 0.2);
+
+  --critical: #DC2626;
+  --critical-bg: rgba(220, 38, 38, 0.12);
+  --critical-border: rgba(220, 38, 38, 0.3);
+
+  --high: #EA580C;
+  --high-bg: rgba(234, 88, 12, 0.12);
+  --high-border: rgba(234, 88, 12, 0.3);
+
+  --medium: #D97706;
+  --medium-bg: rgba(217, 119, 6, 0.12);
+  --medium-border: rgba(217, 119, 6, 0.3);
+
+  --low: #16A34A;
+  --low-bg: rgba(22, 163, 74, 0.12);
+  --low-border: rgba(22, 163, 74, 0.3);
+
+  --info: #0284C7;
+  --info-bg: rgba(2, 132, 199, 0.12);
+
+  --text-main: #0F172A;
+  --text-muted: #334155;
+  --text-dim: #64748B;
+  --text-inverse: #FFFFFF;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-card: 0 4px 20px -2px rgba(15, 23, 42, 0.08);
+  --shadow-modal: 0 16px 48px -4px rgba(15, 23, 42, 0.18);
+  --glow-teal: 0 0 15px -3px rgba(13, 148, 136, 0.2);
+  --glow-violet: 0 0 15px -3px rgba(109, 40, 217, 0.2);
+  --glow-critical: 0 0 15px -3px rgba(220, 38, 38, 0.25);
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Universal Themed Scrollbars */
+*, *::before, *::after, html, body {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(56, 189, 248, 0.3) rgba(10, 16, 32, 0.6);
+}
+
+::-webkit-scrollbar {
+  width: 6px !important;
+  height: 6px !important;
+  background-color: transparent !important;
+}
+
+::-webkit-scrollbar-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-track-piece {
+  background: rgba(10, 16, 32, 0.6) !important;
+  border-radius: 999px !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(56, 189, 248, 0.3) !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(45, 212, 191, 0.65) !important;
+  box-shadow: 0 0 10px rgba(45, 212, 191, 0.45) !important;
+}
+
+::-webkit-scrollbar-corner,
+::-webkit-resizer {
+  background: transparent !important;
+}
